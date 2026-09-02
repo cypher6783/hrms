@@ -63,7 +63,7 @@ export const RecommendationCenter: React.FC = () => {
               recommendedEntityId: 'bed-104',
               recommendedEntityName: 'Isolation Bed A-04 (Negative Pressure)',
               rank: 1,
-              confidenceScore: 0.94,
+              allocationScore: 0.94,
               rationale: 'Negative pressure ventilation available; matched for High Hemorrhagic Risk Lassa isolation.',
               status: 'PENDING',
             },
@@ -74,7 +74,7 @@ export const RecommendationCenter: React.FC = () => {
               recommendedEntityId: 'eq-202',
               recommendedEntityName: 'Infusion Pump Unit IP-09',
               rank: 2,
-              confidenceScore: 0.88,
+              allocationScore: 0.88,
               rationale: 'Calibrated for continuous ribavirin IV infusion protocol.',
               status: 'PENDING',
             },
@@ -297,7 +297,7 @@ export const RecommendationCenter: React.FC = () => {
                       <div className="text-right">
                         <span className="text-[10px] font-bold uppercase text-clinical-on-surface-variant">Allocation Score</span>
                         <div className="text-base font-bold font-tabular text-status-info">
-                          {(item.confidenceScore * 100).toFixed(0)}%
+                          {(((item.allocationScore ?? item.confidenceScore) || 0) * 100).toFixed(0)}%
                         </div>
                       </div>
                     </div>

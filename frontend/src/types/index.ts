@@ -235,7 +235,8 @@ export interface RecommendationItem {
   recommendedEntityId: string;
   recommendedEntityName?: string;
   rank: number;
-  confidenceScore: number; // 0.00 - 1.00 score
+  allocationScore: number; // 0.00 - 1.00 score
+  confidenceScore?: number; // Legacy alias for backward compat
   rationale: string;
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'OVERRIDDEN';
 }

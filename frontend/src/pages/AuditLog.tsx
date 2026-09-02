@@ -36,7 +36,7 @@ export const AuditLogPage: React.FC = () => {
               action: 'RECOMMENDATION_ACCEPT',
               entityType: 'BED_ALLOCATION',
               entityId: 'bed-101',
-              justification: 'Accepted top-ranked algorithm recommendation (94% confidence score).',
+              justification: 'Accepted top-ranked algorithm recommendation (94% Allocation Score).',
               timestamp: '2026-09-02T09:40:00Z',
               ipAddress: '192.168.1.12',
             },
