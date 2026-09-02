@@ -64,12 +64,39 @@ public class StaffShift {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = Instant.now();
-        updatedAt = Instant.now();
+        if (createdAt == null) createdAt = Instant.now();
+        if (updatedAt == null) updatedAt = Instant.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = Instant.now();
     }
+
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
+    public String getShiftName() { return shiftName; }
+    public void setShiftName(String shiftName) { this.shiftName = shiftName; }
+    public LocalDate getShiftDate() { return shiftDate; }
+    public void setShiftDate(LocalDate shiftDate) { this.shiftDate = shiftDate; }
+    public LocalTime getStartTime() { return startTime; }
+    public void setStartTime(LocalTime startTime) { this.startTime = startTime; }
+    public LocalTime getEndTime() { return endTime; }
+    public void setEndTime(LocalTime endTime) { this.endTime = endTime; }
+    public UUID getWardId() { return wardId; }
+    public void setWardId(UUID wardId) { this.wardId = wardId; }
+    public Integer getMinRequiredStaff() { return minRequiredStaff; }
+    public void setMinRequiredStaff(Integer minRequiredStaff) { this.minRequiredStaff = minRequiredStaff; }
+    public Integer getMaxStaff() { return maxStaff; }
+    public void setMaxStaff(Integer maxStaff) { this.maxStaff = maxStaff; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public Instant getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    public UUID getCreatedBy() { return createdBy; }
+    public void setCreatedBy(UUID createdBy) { this.createdBy = createdBy; }
+    public UUID getUpdatedBy() { return updatedBy; }
+    public void setUpdatedBy(UUID updatedBy) { this.updatedBy = updatedBy; }
 }

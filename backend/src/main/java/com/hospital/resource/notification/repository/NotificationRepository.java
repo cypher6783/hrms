@@ -19,6 +19,6 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
     long countByRecipientUserIdAndIsReadFalse(UUID recipientUserId);
 
     @Modifying
-    @Query("UPDATE Notification n SET n.isRead = true, n.readAt = CURRENT_TIMESTAMP WHERE n.recipientUserId = :userId AND n.isRead = false")
-    void markAllAsRead(UUID userId);
+    @Query("UPDATE Notification n SET n.isRead = true, n.readAt = :now WHERE n.recipientUserId = :userId AND n.isRead = false")
+    void markAllAsRead(@org.springframework.data.repository.query.Param("userId") UUID userId, @org.springframework.data.repository.query.Param("now") java.time.Instant now);
 }

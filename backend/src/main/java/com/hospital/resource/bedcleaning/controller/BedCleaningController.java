@@ -4,6 +4,7 @@ import com.hospital.resource.auth.security.SecurityUtils;
 import com.hospital.resource.bedcleaning.dto.*;
 import com.hospital.resource.bedcleaning.service.BedCleaningApplicationService;
 import com.hospital.resource.common.dto.ApiResponse;
+import com.hospital.resource.common.dto.PagedResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/cleaning")
+@RequestMapping("/api/v1/bed-cleaning")
 @RequiredArgsConstructor
 public class BedCleaningController {
 
@@ -26,6 +27,18 @@ public class BedCleaningController {
     @GetMapping("/bed/{bedId}")
     public ApiResponse<List<CleaningTaskResponse>> getTasksByBed(@PathVariable UUID bedId) {
         return ApiResponse.success(cleaningService.getTasksByBed(bedId));
+    }
+
+    @GetMapping
+    public ApiResponse<PagedResponse<CleaningTaskResponse>> searchTasks(
+            @RequestParam(required = false) UUID bedId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) UUID assignedTo,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        CleaningSearchRequest request = new CleaningSearchRequest(
+                bedId, status, assignedTo, null, null, page, size);
+        return ApiResponse.success(cleaningService.searchTasks(request));
     }
 
     @PostMapping("/{id}/assign")
@@ -54,5 +67,10 @@ public class BedCleaningController {
     public ApiResponse<CleaningTaskResponse> verifyCleaning(@PathVariable UUID id) {
         UUID userId = SecurityUtils.getCurrentUserId();
         return ApiResponse.success(cleaningService.verifyCleaning(id, userId));
+    }
+
+    @GetMapping("/stats")
+    public ApiResponse<BedCleaningApplicationService.CleaningStatsResponse> getCleaningStats() {
+        return ApiResponse.success(cleaningService.getCleaningStats());
     }
 }

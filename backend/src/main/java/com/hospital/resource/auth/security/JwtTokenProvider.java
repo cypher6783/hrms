@@ -15,6 +15,8 @@ import java.util.UUID;
 @Component
 public class JwtTokenProvider {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JwtTokenProvider.class);
+
     private final SecretKey key;
     private final long accessTokenExpiryMs;
     private final long refreshTokenExpiryMs;

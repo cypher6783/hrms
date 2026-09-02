@@ -18,6 +18,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class NotificationApplicationService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NotificationApplicationService.class);
+
     private final NotificationRepository notificationRepository;
 
     @Transactional
@@ -68,7 +70,7 @@ public class NotificationApplicationService {
 
     @Transactional
     public void markAllAsRead(UUID userId) {
-        notificationRepository.markAllAsRead(userId);
+        notificationRepository.markAllAsRead(userId, Instant.now());
     }
 
     private NotificationResponse toResponse(Notification notification) {

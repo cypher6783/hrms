@@ -11,10 +11,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
 public interface BedMapper {
-
-    BedMapper INSTANCE = Mappers.getMapper(BedMapper.class);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", ignore = true)

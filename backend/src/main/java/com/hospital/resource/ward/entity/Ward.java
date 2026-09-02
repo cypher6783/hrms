@@ -67,4 +67,8 @@ public class Ward {
     public boolean isActive() {
         return "ACTIVE".equals(status);
     }
+
+    public boolean getIsActive() {
+        return "ACTIVE".equals(status);
+    }
 }

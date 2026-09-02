@@ -76,6 +76,35 @@ public class Staff {
         updatedAt = Instant.now();
     }
 
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
+    public String getStaffNumber() { return staffNumber; }
+    public void setStaffNumber(String staffNumber) { this.staffNumber = staffNumber; }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+    public String getSpecialization() { return specialization; }
+    public void setSpecialization(String specialization) { this.specialization = specialization; }
+    public String getCertificationStatus() { return certificationStatus; }
+    public void setCertificationStatus(String certificationStatus) { this.certificationStatus = certificationStatus; }
+    public LocalDate getCertificationExpiry() { return certificationExpiry; }
+    public void setCertificationExpiry(LocalDate certificationExpiry) { this.certificationExpiry = certificationExpiry; }
+    public UUID getWardId() { return wardId; }
+    public void setWardId(UUID wardId) { this.wardId = wardId; }
+    public BigDecimal getMaxWorkloadThreshold() { return maxWorkloadThreshold; }
+    public void setMaxWorkloadThreshold(BigDecimal maxWorkloadThreshold) { this.maxWorkloadThreshold = maxWorkloadThreshold; }
+    public String getAvailabilityStatus() { return availabilityStatus; }
+    public void setAvailabilityStatus(String availabilityStatus) { this.availabilityStatus = availabilityStatus; }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public Instant getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    public UUID getCreatedBy() { return createdBy; }
+    public void setCreatedBy(UUID createdBy) { this.createdBy = createdBy; }
+    public UUID getUpdatedBy() { return updatedBy; }
+    public void setUpdatedBy(UUID updatedBy) { this.updatedBy = updatedBy; }
+
     public boolean isAvailable() {
         return "ACTIVE".equals(availabilityStatus);
     }

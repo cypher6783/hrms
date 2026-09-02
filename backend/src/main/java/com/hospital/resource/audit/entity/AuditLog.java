@@ -51,8 +51,26 @@ public class AuditLog {
     @Column(name = "integrity_hash", length = 64)
     private String integrityHash;
 
-    @PrePersist
-    protected void onCreate() {
-        timestamp = Instant.now();
-    }
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
+    public Instant getTimestamp() { return timestamp; }
+    public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }
+    public UUID getUserId() { return userId; }
+    public void setUserId(UUID userId) { this.userId = userId; }
+    public String getActionType() { return actionType; }
+    public void setActionType(String actionType) { this.actionType = actionType; }
+    public String getEntityType() { return entityType; }
+    public void setEntityType(String entityType) { this.entityType = entityType; }
+    public UUID getEntityId() { return entityId; }
+    public void setEntityId(UUID entityId) { this.entityId = entityId; }
+    public String getBeforeValue() { return beforeValue; }
+    public void setBeforeValue(String beforeValue) { this.beforeValue = beforeValue; }
+    public String getAfterValue() { return afterValue; }
+    public void setAfterValue(String afterValue) { this.afterValue = afterValue; }
+    public String getIpAddress() { return ipAddress; }
+    public void setIpAddress(String ipAddress) { this.ipAddress = ipAddress; }
+    public String getUserAgent() { return userAgent; }
+    public void setUserAgent(String userAgent) { this.userAgent = userAgent; }
+    public String getIntegrityHash() { return integrityHash; }
+    public void setIntegrityHash(String integrityHash) { this.integrityHash = integrityHash; }
 }

@@ -67,6 +67,33 @@ public class Bed {
         updatedAt = Instant.now();
     }
 
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
+    public String getBedNumber() { return bedNumber; }
+    public void setBedNumber(String bedNumber) { this.bedNumber = bedNumber; }
+    public UUID getWardId() { return wardId; }
+    public void setWardId(UUID wardId) { this.wardId = wardId; }
+    public String getBedType() { return bedType; }
+    public void setBedType(String bedType) { this.bedType = bedType; }
+    public Boolean getIsIsolationCapable() { return isIsolationCapable; }
+    public Boolean getIsIsolation() { return isIsolationCapable; }
+    public void setIsIsolationCapable(Boolean isIsolationCapable) { this.isIsolationCapable = isIsolationCapable; }
+    public void setIsIsolation(Boolean isIsolation) { this.isIsolationCapable = isIsolation; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public UUID getCurrentAdmissionId() { return currentAdmissionId; }
+    public void setCurrentAdmissionId(UUID currentAdmissionId) { this.currentAdmissionId = currentAdmissionId; }
+    public Instant getLastMaintenanceAt() { return lastMaintenanceAt; }
+    public void setLastMaintenanceAt(Instant lastMaintenanceAt) { this.lastMaintenanceAt = lastMaintenanceAt; }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public Instant getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    public UUID getCreatedBy() { return createdBy; }
+    public void setCreatedBy(UUID createdBy) { this.createdBy = createdBy; }
+    public UUID getUpdatedBy() { return updatedBy; }
+    public void setUpdatedBy(UUID updatedBy) { this.updatedBy = updatedBy; }
+
     public boolean isAvailable() {
         return "AVAILABLE".equals(status);
     }

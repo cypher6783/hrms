@@ -2,8 +2,10 @@ package com.hospital.resource.equipment.controller;
 
 import com.hospital.resource.auth.security.SecurityUtils;
 import com.hospital.resource.common.dto.ApiResponse;
+import com.hospital.resource.equipment.dto.EquipmentAllocationResponse;
 import com.hospital.resource.equipment.dto.EquipmentRequest;
 import com.hospital.resource.equipment.dto.EquipmentResponse;
+import com.hospital.resource.equipment.dto.EquipmentUsageHistoryResponse;
 import com.hospital.resource.equipment.service.EquipmentApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,16 +54,19 @@ public class EquipmentController {
     }
 
     @PostMapping("/{id}/assign")
-    public ApiResponse<Void> assignEquipment(@PathVariable UUID id, @RequestParam UUID admissionId) {
+    public ApiResponse<EquipmentAllocationResponse> assignEquipment(@PathVariable UUID id, @RequestParam UUID admissionId) {
         UUID userId = SecurityUtils.getCurrentUserId();
-        equipmentService.assignEquipment(id, admissionId, userId);
-        return ApiResponse.success("Equipment assigned", null);
+        return ApiResponse.success(equipmentService.assignEquipment(id, admissionId, userId));
     }
 
     @PostMapping("/{id}/release")
-    public ApiResponse<Void> releaseEquipment(@PathVariable UUID id) {
+    public ApiResponse<EquipmentAllocationResponse> releaseEquipment(@PathVariable UUID id) {
         UUID userId = SecurityUtils.getCurrentUserId();
-        equipmentService.releaseEquipment(id, userId);
-        return ApiResponse.success("Equipment released", null);
+        return ApiResponse.success(equipmentService.releaseEquipment(id, userId));
+    }
+
+    @GetMapping("/{id}/history")
+    public ApiResponse<EquipmentUsageHistoryResponse> getUsageHistory(@PathVariable UUID id) {
+        return ApiResponse.success(equipmentService.getUsageHistory(id));
     }
 }

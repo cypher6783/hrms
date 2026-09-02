@@ -15,6 +15,7 @@ public interface WardRepository extends JpaRepository<Ward, UUID> {
 
     List<Ward> findByStatus(String status);
 
+    @Query("SELECT w FROM Ward w WHERE w.status = 'ACTIVE'")
     List<Ward> findByIsActiveTrue();
 
     Optional<Ward> findByName(String name);

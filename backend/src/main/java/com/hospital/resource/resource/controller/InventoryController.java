@@ -18,7 +18,7 @@ public class InventoryController {
 
     private final InventoryApplicationService inventoryService;
 
-    @PostMapping("/transaction")
+    @PostMapping("/transactions")
     public ApiResponse<InventoryTransactionResponse> recordTransaction(@Valid @RequestBody InventoryTransactionRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();
         return ApiResponse.success(inventoryService.recordTransaction(request, userId));
@@ -32,5 +32,11 @@ public class InventoryController {
     @GetMapping("/transactions/{inventoryId}")
     public ApiResponse<List<InventoryTransactionResponse>> getTransactionHistory(@PathVariable UUID inventoryId) {
         return ApiResponse.success(inventoryService.getTransactionHistory(inventoryId));
+    }
+
+    @PostMapping("/process-expired")
+    public ApiResponse<List<InventoryTransactionResponse>> processExpiredBatches() {
+        UUID userId = SecurityUtils.getCurrentUserId();
+        return ApiResponse.success(inventoryService.processExpiredBatches(userId));
     }
 }

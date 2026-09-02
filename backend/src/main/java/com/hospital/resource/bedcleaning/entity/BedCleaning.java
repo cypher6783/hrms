@@ -60,12 +60,39 @@ public class BedCleaning {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = Instant.now();
-        updatedAt = Instant.now();
+        if (createdAt == null) createdAt = Instant.now();
+        if (updatedAt == null) updatedAt = Instant.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = Instant.now();
     }
+
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
+    public UUID getBedId() { return bedId; }
+    public void setBedId(UUID bedId) { this.bedId = bedId; }
+    public UUID getAdmissionId() { return admissionId; }
+    public void setAdmissionId(UUID admissionId) { this.admissionId = admissionId; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public UUID getAssignedTo() { return assignedTo; }
+    public void setAssignedTo(UUID assignedTo) { this.assignedTo = assignedTo; }
+    public Instant getAssignedAt() { return assignedAt; }
+    public void setAssignedAt(Instant assignedAt) { this.assignedAt = assignedAt; }
+    public Instant getStartedAt() { return startedAt; }
+    public void setStartedAt(Instant startedAt) { this.startedAt = startedAt; }
+    public Instant getCompletedAt() { return completedAt; }
+    public void setCompletedAt(Instant completedAt) { this.completedAt = completedAt; }
+    public UUID getVerifiedBy() { return verifiedBy; }
+    public void setVerifiedBy(UUID verifiedBy) { this.verifiedBy = verifiedBy; }
+    public Instant getVerifiedAt() { return verifiedAt; }
+    public void setVerifiedAt(Instant verifiedAt) { this.verifiedAt = verifiedAt; }
+    public String getCleaningNotes() { return cleaningNotes; }
+    public void setCleaningNotes(String cleaningNotes) { this.cleaningNotes = cleaningNotes; }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public Instant getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 }

@@ -5,7 +5,6 @@ import com.hospital.resource.common.exception.ValidationException;
 import com.hospital.resource.recommendation.dto.*;
 import com.hospital.resource.recommendation.entity.*;
 import com.hospital.resource.recommendation.repository.*;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +15,22 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class RecommendationApplicationService {
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RecommendationApplicationService.class);
 
     private final AllocationRecommendationRepository recommendationRepository;
     private final RecommendationItemRepository itemRepository;
     private final RecommendationDecisionRepository decisionRepository;
+
+    public RecommendationApplicationService(
+            AllocationRecommendationRepository recommendationRepository,
+            RecommendationItemRepository itemRepository,
+            RecommendationDecisionRepository decisionRepository) {
+        this.recommendationRepository = recommendationRepository;
+        this.itemRepository = itemRepository;
+        this.decisionRepository = decisionRepository;
+    }
 
     @Transactional(readOnly = true)
     public RecommendationResponse getRecommendation(UUID id) {
@@ -43,9 +52,9 @@ public class RecommendationApplicationService {
     }
 
     @Transactional
-    public RecommendationDecisionResponse makeDecision(UUID itemId, RecommendationDecisionRequest request, UUID userId) {
+    public RecommendationDecisionResponse recordDecision(UUID itemId, RecommendationDecisionRequest request, UUID userId) {
         RecommendationItem item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ResourceNotFoundException("Recommendation item", itemId.toString()));
+                .orElseThrow(() -> new ResourceNotFoundException("RecommendationItem", itemId.toString()));
 
         if (!"PENDING".equals(item.getStatus())) {
             throw new ValidationException("Item is not in PENDING status");
@@ -65,7 +74,7 @@ public class RecommendationApplicationService {
 
         decision = decisionRepository.save(decision);
         log.info("Recommendation decision: itemId={}, decisionType={}", itemId, request.decisionType());
-        return new DecisionResponse(decision.getId(), decision.getRecommendationItemId(),
+        return new RecommendationDecisionResponse(decision.getId(), decision.getRecommendationItemId(),
                 decision.getDecisionType(), decision.getDecidedBy(), decision.getDecidedAt());
     }
 
@@ -85,6 +94,4 @@ public class RecommendationApplicationService {
                 itemResponses, recommendation.getCreatedAt()
         );
     }
-
-    private record DecisionResponse(UUID id, UUID recommendationItemId, String decisionType, UUID decidedBy, Instant decidedAt) implements RecommendationDecisionResponse {}
 }

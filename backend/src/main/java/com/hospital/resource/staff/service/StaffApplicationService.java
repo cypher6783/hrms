@@ -1,10 +1,13 @@
 package com.hospital.resource.staff.service;
 
 import com.hospital.resource.common.dto.PagedResponse;
+import com.hospital.resource.common.event.DomainEventPublisher;
+import com.hospital.resource.common.event.staff.StaffAssignedEvent;
 import com.hospital.resource.common.exception.ResourceNotFoundException;
-import com.hospital.resource.staff.dto.StaffRequest;
-import com.hospital.resource.staff.dto.StaffResponse;
+import com.hospital.resource.staff.domain.WorkloadCalculator;
+import com.hospital.resource.staff.dto.*;
 import com.hospital.resource.staff.entity.Staff;
+import com.hospital.resource.staff.mapper.StaffMapper;
 import com.hospital.resource.staff.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,33 +26,42 @@ import java.util.UUID;
 public class StaffApplicationService {
 
     private final StaffRepository staffRepository;
+    private final WorkloadCalculator workloadCalculator;
+    private final StaffMapper staffMapper;
+    private final DomainEventPublisher eventPublisher;
 
     @Transactional
     public StaffResponse createStaff(StaffRequest request, UUID userId) {
-        Staff staff = Staff.builder()
-                .staffNumber("STF-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase())
-                .fullName(request.fullName())
-                .role(request.role())
-                .specialization(request.specialization())
-                .certificationStatus(request.certificationStatus() != null ? request.certificationStatus() : "CURRENT")
-                .certificationExpiry(request.certificationExpiry())
-                .wardId(request.wardId())
-                .maxWorkloadThreshold(request.maxWorkloadThreshold() != null ? request.maxWorkloadThreshold() : java.math.BigDecimal.ONE)
-                .availabilityStatus(request.availabilityStatus() != null ? request.availabilityStatus() : "ACTIVE")
-                .createdBy(userId)
-                .updatedBy(userId)
-                .build();
+        Staff staff = staffMapper.toEntity(request);
+        staff.setStaffNumber("STF-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        staff.setCertificationStatus(request.certificationStatus() != null ? request.certificationStatus() : "CURRENT");
+        staff.setMaxWorkloadThreshold(request.maxWorkloadThreshold() != null ? request.maxWorkloadThreshold() : java.math.BigDecimal.ONE);
+        staff.setAvailabilityStatus(request.availabilityStatus() != null ? request.availabilityStatus() : "ACTIVE");
+        staff.setCreatedBy(userId);
+        staff.setUpdatedBy(userId);
 
         staff = staffRepository.save(staff);
+
+        if (staff.getWardId() != null) {
+            eventPublisher.publish(new StaffAssignedEvent(this, staff.getId(), staff.getWardId()));
+        }
+
         log.info("Staff created: staffId={}, staffNumber={}", staff.getId(), staff.getStaffNumber());
-        return toResponse(staff);
+        return staffMapper.toResponse(staff);
     }
 
     @Transactional(readOnly = true)
     public StaffResponse getStaff(UUID id) {
         Staff staff = staffRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Staff", id.toString()));
-        return toResponse(staff);
+        return staffMapper.toResponse(staff);
+    }
+
+    @Transactional(readOnly = true)
+    public StaffSummaryResponse getStaffSummary(UUID id) {
+        Staff staff = staffRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Staff", id.toString()));
+        return staffMapper.toSummary(staff);
     }
 
     @Transactional(readOnly = true)
@@ -58,15 +70,32 @@ public class StaffApplicationService {
                 PageRequest.of(page, size, Sort.by("fullName").ascending())
         );
         return PagedResponse.of(
-                staffPage.getContent().stream().map(this::toResponse).toList(),
+                staffPage.getContent().stream().map(staffMapper::toResponse).toList(),
                 page, size, staffPage.getTotalElements()
         );
     }
 
     @Transactional(readOnly = true)
-    public List<StaffResponse> getStaffByWard(UUID wardId) {
+    public PagedResponse<StaffResponse> searchStaff(StaffSearchRequest request) {
+        PageRequest pageRequest = PageRequest.of(request.page(), request.size(),
+                Sort.by("fullName").ascending());
+
+        Page<Staff> page = staffRepository.searchStaff(
+                request.name(), request.role(), request.specialization(),
+                request.wardId(), request.availabilityStatus(), request.certificationStatus(),
+                pageRequest);
+
+        List<StaffResponse> content = page.getContent().stream()
+                .map(staffMapper::toResponse)
+                .toList();
+
+        return PagedResponse.of(content, request.page(), request.size(), page.getTotalElements());
+    }
+
+    @Transactional(readOnly = true)
+    public List<StaffSummaryResponse> getStaffByWard(UUID wardId) {
         return staffRepository.findByWardIdAndAvailabilityStatus(wardId, "ACTIVE").stream()
-                .map(this::toResponse)
+                .map(staffMapper::toSummary)
                 .toList();
     }
 
@@ -75,18 +104,28 @@ public class StaffApplicationService {
         Staff staff = staffRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Staff", id.toString()));
 
-        staff.setFullName(request.fullName());
-        staff.setRole(request.role());
-        staff.setSpecialization(request.specialization());
-        staff.setCertificationStatus(request.certificationStatus());
-        staff.setCertificationExpiry(request.certificationExpiry());
-        staff.setWardId(request.wardId());
-        staff.setAvailabilityStatus(request.availabilityStatus());
+        staffMapper.updateEntity(request, staff);
         staff.setUpdatedBy(userId);
 
         staff = staffRepository.save(staff);
         log.info("Staff updated: staffId={}", staff.getId());
-        return toResponse(staff);
+        return staffMapper.toResponse(staff);
+    }
+
+    @Transactional(readOnly = true)
+    public StaffWorkloadResponse getStaffWorkload(UUID id) {
+        Staff staff = staffRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Staff", id.toString()));
+        return workloadCalculator.calculateWorkload(staff);
+    }
+
+    @Transactional(readOnly = true)
+    public StaffStatsResponse getStaffStats() {
+        long activeCount = staffRepository.countByAvailabilityStatus("ACTIVE");
+        long inactiveCount = staffRepository.countByAvailabilityStatus("INACTIVE");
+        long onLeaveCount = staffRepository.countByAvailabilityStatus("ON_LEAVE");
+        long expiredCerts = staffRepository.countWithExpiredCertification();
+        return new StaffStatsResponse(activeCount, inactiveCount, onLeaveCount, expiredCerts);
     }
 
     @Transactional(readOnly = true)
@@ -94,20 +133,10 @@ public class StaffApplicationService {
         return staffRepository.countByAvailabilityStatus("ACTIVE");
     }
 
-    private StaffResponse toResponse(Staff staff) {
-        return new StaffResponse(
-                staff.getId(),
-                staff.getStaffNumber(),
-                staff.getFullName(),
-                staff.getRole(),
-                staff.getSpecialization(),
-                staff.getCertificationStatus(),
-                staff.getCertificationExpiry(),
-                staff.getWardId(),
-                staff.getMaxWorkloadThreshold(),
-                staff.getAvailabilityStatus(),
-                staff.getCreatedAt(),
-                staff.getUpdatedAt()
-        );
-    }
+    public record StaffStatsResponse(
+            long activeStaff,
+            long inactiveStaff,
+            long onLeaveStaff,
+            long expiredCertifications
+    ) {}
 }

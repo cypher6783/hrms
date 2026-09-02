@@ -38,9 +38,51 @@ public class RefreshToken {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = Instant.now();
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
+    public String getTokenHash() { return tokenHash; }
+    public void setTokenHash(String tokenHash) { this.tokenHash = tokenHash; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+    public Instant getExpiresAt() { return expiresAt; }
+    public void setExpiresAt(Instant expiresAt) { this.expiresAt = expiresAt; }
+    public Boolean getRevoked() { return revoked; }
+    public void setRevoked(Boolean revoked) { this.revoked = revoked; }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+
+    public static RefreshTokenBuilder builder() { return new RefreshTokenBuilder(); }
+
+    public static class RefreshTokenBuilder {
+        private UUID id;
+        private String tokenHash;
+        private User user;
+        private Instant expiresAt;
+        private Boolean revoked = false;
+        private Instant createdAt;
+        private String rawToken;
+
+        RefreshTokenBuilder() {}
+
+        public RefreshTokenBuilder id(UUID id) { this.id = id; return this; }
+        public RefreshTokenBuilder tokenHash(String tokenHash) { this.tokenHash = tokenHash; return this; }
+        public RefreshTokenBuilder user(User user) { this.user = user; return this; }
+        public RefreshTokenBuilder expiresAt(Instant expiresAt) { this.expiresAt = expiresAt; return this; }
+        public RefreshTokenBuilder revoked(Boolean revoked) { this.revoked = revoked; return this; }
+        public RefreshTokenBuilder createdAt(Instant createdAt) { this.createdAt = createdAt; return this; }
+        public RefreshTokenBuilder rawToken(String rawToken) { this.rawToken = rawToken; return this; }
+
+        public RefreshToken build() {
+            RefreshToken token = new RefreshToken();
+            token.setId(id);
+            token.setTokenHash(tokenHash);
+            token.setUser(user);
+            token.setExpiresAt(expiresAt);
+            token.setRevoked(revoked);
+            token.setCreatedAt(createdAt);
+            token.setRawToken(rawToken);
+            return token;
+        }
     }
 
     public boolean isExpired() {
@@ -48,11 +90,10 @@ public class RefreshToken {
     }
 
     public boolean isValid() {
-        return !revoked && !isExpired();
+        return Boolean.FALSE.equals(revoked) && !isExpired();
     }
 
     @Transient
-    @Getter(AccessLevel.NONE)
     private String rawToken;
 
     public String getRawToken() {

@@ -26,6 +26,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AuthService.class);
+
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
