@@ -1,0 +1,14 @@
+# Maven build directory
+**/target/
+target/
+
+# IDE / Editor metadata
+.vscode/
+.idea/
+*.iml
+.mimocode/
+
+# OS / Temp files
+.DS_Store
+Thumbs.db
+*.docx
