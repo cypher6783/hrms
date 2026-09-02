@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bed Management - Lassa Fever Unit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary": "#000000",
+                      "on-tertiary-fixed": "#271901",
+                      "on-error": "#ffffff",
+                      "on-secondary-fixed": "#0d1c2f",
+                      "primary-fixed": "#dae2fd",
+                      "surface-container": "#f0edef",
+                      "on-secondary-container": "#57657b",
+                      "surface-variant": "#e4e2e4",
+                      "inverse-on-surface": "#f3f0f2",
+                      "on-tertiary-fixed-variant": "#574425",
+                      "secondary-fixed-dim": "#b9c7e0",
+                      "tertiary-container": "#271901",
+                      "tertiary-fixed-dim": "#dec29a",
+                      "background": "#fcf8fa",
+                      "surface-bright": "#fcf8fa",
+                      "on-primary": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "on-background": "#1b1b1d",
+                      "primary-fixed-dim": "#bec6e0",
+                      "on-secondary-fixed-variant": "#3a485c",
+                      "on-error-container": "#93000a",
+                      "surface-container-low": "#f6f3f5",
+                      "surface-dim": "#dcd9db",
+                      "secondary-container": "#d5e3fd",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-highest": "#e4e2e4",
+                      "on-surface": "#1b1b1d",
+                      "surface-tint": "#565e74",
+                      "on-primary-container": "#7c839b",
+                      "tertiary-fixed": "#fcdeb5",
+                      "on-surface-variant": "#45464d",
+                      "inverse-primary": "#bec6e0",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "error": "#ba1a1a",
+                      "on-primary-fixed": "#131b2e",
+                      "outline-variant": "#c6c6cd",
+                      "on-tertiary-container": "#98805d",
+                      "surface": "#fcf8fa",
+                      "surface-container-high": "#eae7e9",
+                      "secondary-fixed": "#d5e3fd",
+                      "inverse-surface": "#303032",
+                      "primary-container": "#131b2e",
+                      "error-container": "#ffdad6",
+                      "primary": "#000000",
+                      "secondary": "#515f74",
+                      "outline": "#76777d"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "base": "4px",
+                      "md": "16px",
+                      "margin-mobile": "16px",
+                      "xl": "32px",
+                      "sm": "8px",
+                      "xs": "4px",
+                      "gutter": "16px",
+                      "margin-desktop": "32px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "data-mono": ["Inter"],
+                      "display-lg-mobile": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-md": ["Inter"]
+              },
+              "fontSize": {
+                      "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                      "display-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background antialiased pb-24 md:pb-0">
+<!-- TopAppBar (Mobile) -->
+<header class="md:hidden fixed top-0 w-full z-50 flex justify-between items-center px-md h-14 bg-surface border-b border-outline-variant flat no shadows">
+<button class="text-on-surface-variant hover:bg-surface-container active:opacity-80 transition-colors rounded-full p-2 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="clinical_notes">clinical_notes</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary">Lassa Fever Unit</h1>
+<button class="text-on-surface-variant hover:bg-surface-container active:opacity-80 transition-colors rounded-full p-2 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</header>
+<!-- NavigationDrawer (Desktop) -->
+<nav class="hidden md:flex fixed left-0 top-0 h-full flex-col p-md z-40 bg-surface border-r border-outline-variant shadow-sm h-full w-[280px]">
+<div class="mb-xl flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">SC</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary">Dr. Sarah Chen</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Lead Clinician</p>
+<p class="font-label-md text-label-md text-outline">Shift: 08:00 - 20:00</p>
+</div>
+</div>
+<ul class="flex flex-col gap-sm">
+<li>
+<a class="flex items-center gap-sm p-sm rounded-full text-on-surface-variant hover:bg-surface-container-highest cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm p-sm rounded-full text-on-surface-variant hover:bg-surface-container-highest cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-body-md text-body-md">Patients</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm p-sm rounded-full bg-secondary-container text-on-secondary-container font-bold cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="bed">bed</span>
+<span class="font-body-md text-body-md">Beds</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm p-sm rounded-full text-on-surface-variant hover:bg-surface-container-highest cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-body-md text-body-md">Recs</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm p-sm rounded-full text-on-surface-variant hover:bg-surface-container-highest cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-body-md text-body-md">Resources</span>
+</a>
+</li>
+</ul>
+<div class="mt-auto border-t border-outline-variant pt-md">
+<ul class="flex flex-col gap-sm">
+<li>
+<a class="flex items-center gap-sm p-sm rounded-full text-on-surface-variant hover:bg-surface-container-highest cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span class="font-body-md text-body-md">System Logs</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm p-sm rounded-full text-on-surface-variant hover:bg-surface-container-highest cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">Unit Settings</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="md:ml-[280px] pt-14 md:pt-0 p-margin-mobile md:p-margin-desktop">
+<!-- Header & Controls -->
+<div class="mb-lg flex flex-col gap-md">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-background">Bed Management</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Real-time status overview</p>
+</div>
+<!-- Ward Toggle (Pill Segmented Control) -->
+<div class="bg-surface-container-low p-1 rounded-full flex self-start border border-outline-variant">
+<button class="px-md py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm">Ward A</button>
+<button class="px-md py-sm rounded-full text-on-surface-variant hover:bg-surface-container-highest font-label-md text-label-md transition-colors">Ward B</button>
+<button class="px-md py-sm rounded-full text-on-surface-variant hover:bg-surface-container-highest font-label-md text-label-md transition-colors">Isolation Unit</button>
+</div>
+<!-- Filters -->
+<div class="flex gap-sm overflow-x-auto pb-2 -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 hide-scrollbar">
+<button class="whitespace-nowrap px-md py-sm rounded-full border border-outline-variant bg-surface text-on-surface font-label-md text-label-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]" data-icon="filter_list">filter_list</span>
+                    All Status
+                </button>
+<button class="whitespace-nowrap px-md py-sm rounded-full border border-outline-variant bg-surface text-on-surface font-label-md text-label-md flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-[#10B981]"></div>
+                    Available
+                </button>
+<button class="whitespace-nowrap px-md py-sm rounded-full border border-outline-variant bg-surface text-on-surface font-label-md text-label-md flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+                    Occupied
+                </button>
+<button class="whitespace-nowrap px-md py-sm rounded-full border border-outline-variant bg-surface text-on-surface font-label-md text-label-md flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-[#F59E0B]"></div>
+                    Cleaning
+                </button>
+</div>
+</div>
+<!-- Bed Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md">
+<!-- Bed Card: Available -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col gap-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-[#10B981]"></div>
+<div class="flex justify-between items-start">
+<div>
+<div class="font-data-mono text-data-mono text-on-surface">B-001</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Standard</div>
+</div>
+<span class="px-2 py-1 rounded-sm bg-[#DCFCE7] text-[#10B981] font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+                        Available
+                    </span>
+</div>
+<div class="mt-auto pt-md flex justify-end">
+<button class="px-md py-sm bg-primary text-on-primary rounded font-label-md text-label-md w-full">Assign Patient</button>
+</div>
+</div>
+<!-- Bed Card: Occupied -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col gap-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-secondary"></div>
+<div class="flex justify-between items-start">
+<div>
+<div class="font-data-mono text-data-mono text-on-surface">B-002</div>
+<div class="font-label-md text-label-md text-on-surface-variant">ICU</div>
+</div>
+<span class="px-2 py-1 rounded-sm bg-surface-container-high text-secondary font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="person">person</span>
+                        Occupied
+                    </span>
+</div>
+<div class="mt-auto pt-sm flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-sm">JD</div>
+<div class="font-body-md text-body-md text-on-surface">J. Doe</div>
+</div>
+</div>
+<!-- Bed Card: Cleaning -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col gap-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-[#F59E0B]"></div>
+<div class="flex justify-between items-start">
+<div>
+<div class="font-data-mono text-data-mono text-on-surface">B-003</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Standard</div>
+</div>
+<span class="px-2 py-1 rounded-sm bg-[#FEF3C7] text-[#D97706] font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="cleaning_services">cleaning_services</span>
+                        Cleaning
+                    </span>
+</div>
+<div class="mt-auto pt-md flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant">Est. 15m</span>
+<button class="px-sm py-1 border border-outline-variant text-on-surface rounded font-label-md text-label-md">Mark Ready</button>
+</div>
+</div>
+<!-- Bed Card: Maintenance -->
+<div class="bg-surface border border-error rounded-lg p-md flex flex-col gap-sm relative overflow-hidden bg-error-container">
+<div class="absolute top-0 left-0 w-full h-1 bg-error"></div>
+<div class="flex justify-between items-start">
+<div>
+<div class="font-data-mono text-data-mono text-on-error-container">B-004</div>
+<div class="font-label-md text-label-md text-on-error-container/80">ICU - Vent</div>
+</div>
+<span class="px-2 py-1 rounded-sm bg-error text-on-error font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="build">build</span>
+                        Maint.
+                    </span>
+</div>
+<div class="mt-auto pt-sm">
+<p class="font-body-md text-body-md text-on-error-container">O2 supply line check.</p>
+</div>
+</div>
+<!-- Bed Card: Available -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col gap-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-[#10B981]"></div>
+<div class="flex justify-between items-start">
+<div>
+<div class="font-data-mono text-data-mono text-on-surface">B-005</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Standard</div>
+</div>
+<span class="px-2 py-1 rounded-sm bg-[#DCFCE7] text-[#10B981] font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+                        Available
+                    </span>
+</div>
+<div class="mt-auto pt-md flex justify-end">
+<button class="px-md py-sm bg-primary text-on-primary rounded font-label-md text-label-md w-full">Assign Patient</button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center px-base py-xs pb-safe bg-surface border-t border-outline-variant flat no shadows">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low active:scale-95 transition-all duration-100 p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low active:scale-95 transition-all duration-100 p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-md text-label-md">Patients</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary font-bold active:scale-95 transition-all duration-100 p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="bed" data-weight="fill">bed</span>
+<span class="font-label-md text-label-md">Beds</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low active:scale-95 transition-all duration-100 p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Recs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low active:scale-95 transition-all duration-100 p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-md text-label-md">Resources</span>
+</a>
+</nav>
+<style>
+        /* Hide scrollbar for horizontal scrolling filter area */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

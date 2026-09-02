@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Manual Override - Lassa Fever Unit</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e4e2e4",
+                        "on-primary-container": "#7c839b",
+                        "surface-container": "#f0edef",
+                        "surface": "#fcf8fa",
+                        "on-secondary-container": "#57657b",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#dae2fd",
+                        "inverse-surface": "#303032",
+                        "outline-variant": "#c6c6cd",
+                        "secondary-fixed": "#d5e3fd",
+                        "surface-container-highest": "#e4e2e4",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "surface-bright": "#fcf8fa",
+                        "on-tertiary-fixed": "#271901",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#dcd9db",
+                        "primary": "#000000",
+                        "outline": "#76777d",
+                        "on-surface": "#1b1b1d",
+                        "primary-fixed-dim": "#bec6e0",
+                        "inverse-primary": "#bec6e0",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "on-surface-variant": "#45464d",
+                        "tertiary": "#000000",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#eae7e9",
+                        "surface-container-low": "#f6f3f5",
+                        "surface-tint": "#565e74",
+                        "tertiary-container": "#271901",
+                        "on-primary-fixed": "#131b2e",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "on-background": "#1b1b1d",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "primary-container": "#131b2e",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#fcdeb5",
+                        "on-secondary": "#ffffff",
+                        "background": "#fcf8fa",
+                        "secondary": "#515f74",
+                        "secondary-container": "#d5e3fd",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#98805d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "margin-desktop": "32px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "display-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scrim {
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Bottom Sheet Animation */
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .bottom-sheet-enter {
+            animation: slideUp 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+        }
+    </style>
+</head>
+<body class="h-full bg-surface-container text-on-surface antialiased flex flex-col font-body-md overflow-hidden relative">
+<!-- Top App Bar (Suppressed via rule, but keeping for context if needed. Hidden per relevance check: Transactional/Task focused) -->
+<!-- Content Canvas (Simulated background) -->
+<main class="flex-1 overflow-y-auto p-md blur-sm pointer-events-none">
+<div class="space-y-md">
+<div class="h-32 bg-surface-container-highest rounded-lg opacity-50"></div>
+<div class="h-64 bg-surface-container-highest rounded-lg opacity-50"></div>
+</div>
+</main>
+<!-- Bottom Sheet Scrim Overlay -->
+<div aria-hidden="true" class="fixed inset-0 scrim z-40 transition-opacity duration-300" id="scrim"></div>
+<!-- Bottom Sheet Container -->
+<div aria-labelledby="override-title" aria-modal="true" class="fixed bottom-0 left-0 right-0 z-50 flex flex-col items-center justify-end w-full" role="dialog">
+<!-- Sheet Content -->
+<div class="w-full bg-surface-container-lowest rounded-t-xl rounded-tr-xl shadow-lg bottom-sheet-enter max-h-[90vh] flex flex-col pt-xs px-md pb-xl md:w-3/4 lg:w-1/2 md:rounded-t-[24px]">
+<!-- Drag Handle -->
+<div class="w-full flex justify-center py-sm cursor-grab active:cursor-grabbing touch-none" id="drag-handle">
+<div class="w-8 h-1 bg-outline-variant rounded-full"></div>
+</div>
+<div class="flex-1 overflow-y-auto hide-scrollbar">
+<!-- Header -->
+<div class="flex items-center justify-between mt-sm mb-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface" id="override-title">Manual Override</h2>
+<button aria-label="Close" class="text-on-surface-variant hover:bg-surface-container-highest rounded-full p-sm transition-colors" onclick="closeSheet()">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+</div>
+<!-- Summary Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-md mb-lg">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider block mb-xs">Original Allocation</span>
+<div class="font-headline-sm text-headline-sm text-on-surface">Bed B-014</div>
+</div>
+<div class="bg-surface-container-high px-sm py-xs rounded text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">analytics</span>
+<span class="font-data-mono text-data-mono">Score: 98</span>
+</div>
+</div>
+</div>
+<!-- Form Section -->
+<form class="space-y-lg flex flex-col h-full" id="overrideForm">
+<div class="space-y-sm">
+<label class="font-label-md text-label-md text-on-surface block" for="override-reason">
+                            Reason for Override <span class="text-error">*</span>
+</label>
+<div class="relative">
+<textarea aria-required="true" class="w-full bg-surface border border-outline-variant rounded-lg p-md font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] focus:outline-none transition-colors resize-none" id="override-reason" placeholder="Enter clinical justification..." required="" rows="3"></textarea>
+</div>
+</div>
+<!-- Audit Trail Warning -->
+<div class="flex items-start gap-sm bg-error-container/20 border border-error/20 rounded-lg p-sm mt-auto mb-md">
+<span class="material-symbols-outlined text-error text-[20px] mt-[2px]" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div>
+<p class="font-body-md text-body-md text-on-surface">
+                                This action will be logged in the permanent audit trail.
+                            </p>
+<p class="font-label-md text-label-md text-on-surface-variant mt-xs">
+                                Ref ID: #A74-902B
+                            </p>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full bg-primary text-on-primary py-[14px] rounded-lg font-label-md text-label-md uppercase tracking-wider flex items-center justify-center gap-sm active:scale-[0.98] transition-transform shadow-sm" type="submit">
+<span class="material-symbols-outlined text-[20px]">fact_check</span>
+                        Confirm Override
+                    </button>
+</form>
+</div>
+</div>
+</div>
+<script>
+        function closeSheet() {
+            const sheet = document.querySelector('.bottom-sheet-enter');
+            const scrim = document.getElementById('scrim');
+            
+            // Basic exit animation classes (tailwind doesn't do exit anims easily without writing keyframes)
+            sheet.style.transform = 'translateY(100%)';
+            sheet.style.transition = 'transform 0.2s ease-in';
+            scrim.style.opacity = '0';
+            
+            setTimeout(() => {
+                sheet.parentElement.style.display = 'none';
+                scrim.style.display = 'none';
+                
+                // Remove blur from main content
+                document.querySelector('main').classList.remove('blur-sm', 'pointer-events-none');
+            }, 200);
+        }
+
+        // Form submission handling
+        document.getElementById('overrideForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const reason = document.getElementById('override-reason').value;
+            if(reason.trim() !== '') {
+                // In a real app, send data to server
+                const btn = e.target.querySelector('button');
+                btn.innerHTML = `<span class="material-symbols-outlined text-[20px] animate-spin">progress_activity</span> Processing...`;
+                btn.disabled = true;
+                
+                setTimeout(() => {
+                    closeSheet();
+                }, 800);
+            }
+        });
+
+        // Simple drag to close logic (visual only for this demo)
+        const dragHandle = document.getElementById('drag-handle');
+        const sheet = document.querySelector('.bottom-sheet-enter');
+        let startY = 0;
+        let currentY = 0;
+
+        dragHandle.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+            sheet.style.transition = 'none';
+        }, {passive: true});
+
+        dragHandle.addEventListener('touchmove', (e) => {
+            currentY = e.touches[0].clientY;
+            const diff = currentY - startY;
+            if (diff > 0) {
+                sheet.style.transform = `translateY(${diff}px)`;
+            }
+        }, {passive: true});
+
+        dragHandle.addEventListener('touchend', (e) => {
+            const diff = currentY - startY;
+            sheet.style.transition = 'transform 0.2s ease-out';
+            if (diff > 100) {
+                closeSheet();
+            } else {
+                sheet.style.transform = 'translateY(0)';
+            }
+        });
+    </script>
+</body></html>

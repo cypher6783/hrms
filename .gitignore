@@ -2,6 +2,12 @@
 **/target/
 target/
 
+# Node / Frontend build directories
+**/node_modules/
+node_modules/
+**/dist/
+dist/
+
 # IDE / Editor metadata
 .vscode/
 .idea/

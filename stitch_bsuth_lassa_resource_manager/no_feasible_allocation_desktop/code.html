@@ -1,0 +1,248 @@
+<!DOCTYPE html><html class="h-full" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>BSUTH Lassa Resource Manager - Recommendation Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#000000",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "inverse-surface": "#303032",
+                        "tertiary-fixed": "#fcdeb5",
+                        "secondary-fixed": "#d5e3fd",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#565e74",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#dcd9db",
+                        "secondary-container": "#d5e3fd",
+                        "tertiary-container": "#271901",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#57657b",
+                        "surface-container-low": "#f6f3f5",
+                        "on-surface-variant": "#45464d",
+                        "on-surface": "#1b1b1d",
+                        "surface-bright": "#fcf8fa",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#271901",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#bec6e0",
+                        "primary-container": "#131b2e",
+                        "surface-container": "#f0edef",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f3f0f2",
+                        "surface-variant": "#e4e2e4",
+                        "background": "#fcf8fa",
+                        "primary-fixed": "#dae2fd",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-container": "#98805d",
+                        "on-primary-container": "#7c839b",
+                        "surface-container-high": "#eae7e9",
+                        "surface": "#fcf8fa",
+                        "on-background": "#1b1b1d",
+                        "on-primary-fixed": "#131b2e",
+                        "tertiary": "#000000",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "secondary": "#515f74",
+                        "outline": "#76777d",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "surface-container-highest": "#e4e2e4",
+                        "inverse-primary": "#bec6e0",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "base": "4px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "xs": "4px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .pulse-border {
+            animation: pulse-border-animation 2s infinite;
+        }
+        @keyframes pulse-border-animation {
+            0% { border-color: #ba1a1a; box-shadow: 0 0 0 0 rgba(186, 26, 26, 0.4); }
+            70% { border-color: #ba1a1a; box-shadow: 0 0 0 4px rgba(186, 26, 26, 0); }
+            100% { border-color: #ba1a1a; box-shadow: 0 0 0 0 rgba(186, 26, 26, 0); }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background h-full font-sans antialiased overflow-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-[280px] h-16 bg-surface border-b border-outline-variant flex justify-between items-center px-lg w-[calc(100%-280px)] z-20">
+<div class="flex items-center gap-sm">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">System Status: Active</span>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-64 h-8 pl-[32px] pr-sm rounded bg-surface-container-low border border-outline-variant focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant transition-colors" placeholder="Search resources..." type="text">
+</div>
+<div class="flex gap-sm">
+<button aria-label="Refresh" class="p-xs text-on-surface-variant hover:bg-surface-variant rounded-full transition-all duration-200 ease-in-out flex items-center justify-center h-8 w-8">
+<span class="material-symbols-outlined text-[20px]" data-icon="refresh">refresh</span>
+</button>
+<button aria-label="Notifications" class="p-xs text-on-surface-variant hover:bg-surface-variant rounded-full transition-all duration-200 ease-in-out flex items-center justify-center h-8 w-8 relative">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button aria-label="Account" class="p-xs text-on-surface-variant hover:bg-surface-variant rounded-full transition-all duration-200 ease-in-out flex items-center justify-center h-8 w-8">
+<span class="material-symbols-outlined text-[20px]" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-screen w-[280px] bg-surface-container-lowest border-r border-outline-variant flex flex-col py-md px-sm z-30">
+<div class="flex items-center gap-md px-sm mb-xl">
+<div class="w-10 h-10 bg-surface-container-high rounded-full flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface text-[24px]">local_hospital</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">BSUTH Lassa</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Resource Manager</p>
+</div>
+</div>
+<ul class="flex flex-col gap-xs flex-1 overflow-y-auto">
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-150 cursor-pointer active:scale-95 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-150 cursor-pointer active:scale-95 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="groups">groups</span>
+                    Patients
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-150 cursor-pointer active:scale-95 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="person_add">person_add</span>
+                    Admissions
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-150 cursor-pointer active:scale-95 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="bed">bed</span>
+                    Beds &amp; Wards
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-150 cursor-pointer active:scale-95 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="inventory_2">inventory_2</span>
+                    Resources
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded border-l-[3px] border-primary bg-surface-container text-primary font-bold transition-all cursor-pointer active:scale-95 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="bolt" data-weight="fill">bolt</span>
+                    Recommendation Center
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-150 cursor-pointer active:scale-95 font-body-md text-body-md mt-auto" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="history">history</span>
+                    Audit
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-150 cursor-pointer active:scale-95 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-[280px] mt-16 p-margin-desktop h-[calc(100vh-64px)] overflow-y-auto bg-surface-container-lowest">
+<!-- Context Header -->
+<div class="mb-lg pb-md border-b border-outline-variant">
+<div class="flex items-center gap-sm mb-xs">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Patient Placement Evaluation</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface">Patient: Okonkwon, Chidi</h2>
+<div class="flex items-center gap-md mt-sm">
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-error-container text-on-error-container font-label-md text-label-md border border-[#fca5a5]">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                     High Severity
+                 </span>
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-surface-container-high text-on-surface font-label-md text-label-md border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+                     Required Isolation: Level 4
+                 </span>
+<span class="font-data-mono text-data-mono text-on-surface-variant ml-auto">ID: PT-4092</span>
+</div>
+</div>
+<!-- Clinical Alert Banner (Operational Safety Tone) -->
+<div class="bg-surface border border-outline-variant rounded-lg p-lg mb-xl relative overflow-hidden flex flex-col md:flex-row gap-lg items-start">
+
+<div class="flex-shrink-0 mt-1">
+<span class="material-symbols-outlined text-on-surface-variant text-[32px]">clinical_notes</span>
+</div>
+<div class="flex-1"><div class="flex justify-between items-start mb-md"><div class="flex-1"><h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mb-xs uppercase">No Feasible Allocation</h3><p class="font-body-lg text-body-lg text-on-surface-variant">No safe allocation is currently available for this patient based on current ward status.</p></div><div class="text-right"><span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Candidates Evaluated</span><div class="font-display-lg text-display-lg text-on-surface">30</div></div></div><div class="mb-sm"><span class="font-label-md text-label-md text-on-surface font-bold uppercase tracking-wider">Failed Mandatory Constraints</span></div><div class="grid grid-cols-2 md:grid-cols-4 gap-sm bg-surface-container-low p-md rounded border border-outline-variant"><div class="flex flex-col gap-xs"><span class="font-display-lg text-display-lg text-on-surface">12</span><span class="font-label-md text-label-md text-on-surface-variant">Isolation Mismatch</span></div><div class="flex flex-col gap-xs"><span class="font-display-lg text-display-lg text-on-surface">14</span><span class="font-label-md text-label-md text-on-surface-variant">Occupied</span></div><div class="flex flex-col gap-xs"><span class="font-display-lg text-display-lg text-on-surface">2</span><span class="font-label-md text-label-md text-on-surface-variant">Awaiting Cleaning</span></div><div class="flex flex-col gap-xs"><span class="font-display-lg text-display-lg text-on-surface">2</span><span class="font-label-md text-label-md text-on-surface-variant">Out of Service</span></div></div></div>
+</div>
+<!-- Action Area -->
+<div class="flex flex-col sm:flex-row gap-md border-t border-outline-variant pt-lg">
+<button class="bg-[#0F172A] text-[#FFFFFF] font-label-md text-label-md px-lg py-md rounded hover:bg-opacity-90 transition-colors flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">support_agent</span>
+                 Contact Unit Lead
+             </button>
+<button class="bg-surface border border-[#CBD5E1] text-[#475569] font-label-md text-label-md px-lg py-md rounded hover:bg-surface-container-low transition-colors flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">rule</span>
+                 Manual Override Search
+             </button>
+<button class="bg-surface border border-[#CBD5E1] text-[#475569] font-label-md text-label-md px-lg py-md rounded hover:bg-surface-container-low transition-colors flex items-center justify-center gap-sm ml-auto">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+                 Refresh System Status
+             </button>
+</div>
+</main>
+
+
+</body></html>

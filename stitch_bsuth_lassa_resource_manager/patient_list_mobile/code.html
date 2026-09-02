@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Patient List - LassaOps Command</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "on-tertiary": "#ffffff",
+                            "on-secondary-container": "#57657b",
+                            "on-error": "#ffffff",
+                            "tertiary": "#000000",
+                            "primary-container": "#131b2e",
+                            "on-surface": "#1b1b1d",
+                            "inverse-primary": "#bec6e0",
+                            "inverse-on-surface": "#f3f0f2",
+                            "surface": "#fcf8fa",
+                            "tertiary-fixed-dim": "#dec29a",
+                            "surface-container": "#f0edef",
+                            "primary-fixed": "#dae2fd",
+                            "surface-container-highest": "#e4e2e4",
+                            "on-primary-fixed": "#131b2e",
+                            "error-container": "#ffdad6",
+                            "on-primary": "#ffffff",
+                            "on-error-container": "#93000a",
+                            "tertiary-container": "#271901",
+                            "error": "#ba1a1a",
+                            "surface-tint": "#565e74",
+                            "primary-fixed-dim": "#bec6e0",
+                            "surface-dim": "#dcd9db",
+                            "on-tertiary-container": "#98805d",
+                            "tertiary-fixed": "#fcdeb5",
+                            "surface-bright": "#fcf8fa",
+                            "on-background": "#1b1b1d",
+                            "background": "#fcf8fa",
+                            "inverse-surface": "#303032",
+                            "secondary-fixed-dim": "#b9c7e0",
+                            "surface-container-lowest": "#ffffff",
+                            "on-tertiary-fixed-variant": "#574425",
+                            "surface-container-high": "#eae7e9",
+                            "on-surface-variant": "#45464d",
+                            "secondary": "#515f74",
+                            "secondary-fixed": "#d5e3fd",
+                            "on-primary-fixed-variant": "#3f465c",
+                            "surface-variant": "#e4e2e4",
+                            "on-secondary": "#ffffff",
+                            "surface-container-low": "#f6f3f5",
+                            "secondary-container": "#d5e3fd",
+                            "on-tertiary-fixed": "#271901",
+                            "primary": "#000000",
+                            "outline": "#76777d",
+                            "on-primary-container": "#7c839b",
+                            "on-secondary-fixed-variant": "#3a485c",
+                            "on-secondary-fixed": "#0d1c2f",
+                            "outline-variant": "#c6c6cd"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.125rem",
+                            "lg": "0.25rem",
+                            "xl": "0.5rem",
+                            "full": "0.75rem"
+                    },
+                    "spacing": {
+                            "base": "4px",
+                            "margin-desktop": "32px",
+                            "xs": "4px",
+                            "xl": "32px",
+                            "lg": "24px",
+                            "sm": "8px",
+                            "gutter": "16px",
+                            "margin-mobile": "16px",
+                            "md": "16px"
+                    },
+                    "fontFamily": {
+                            "display-lg": ["Inter"],
+                            "headline-sm": ["Inter"],
+                            "headline-md": ["Inter"],
+                            "body-lg": ["Inter"],
+                            "display-lg-mobile": ["Inter"],
+                            "body-md": ["Inter"],
+                            "label-md": ["Inter"],
+                            "data-mono": ["Inter"]
+                    },
+                    "fontSize": {
+                            "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                            "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                            "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                            "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                            "display-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "700"}],
+                            "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                            "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                            "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md h-screen flex flex-col md:hidden">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky bg-surface border-b border-outline-variant flex justify-between items-center px-md h-14 z-40">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined cursor-pointer active:opacity-80 text-on-surface-variant hover:bg-surface-container-high transition-colors p-xs rounded-full">menu</span>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary">LassaOps Command</h1>
+</div>
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant overflow-hidden cursor-pointer active:opacity-80">
+<img alt="Clinician Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a clinician wearing sterile scrubs and a medical mask, with a calm and authoritative expression, set against a clean, bright, white-toned clinical background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5IEM4hrBkM6nGnfeQT8tUBhdTbjjT-v5CQhu-IvfABmvRBZ19c99huBF3FRHA0JOBlmBM7vpRrTtE5teukhLdMDUTWwNVQsEuaHJszvp37qpiV95lPebGpnKDVa9uiem8QDnXjdtFOvkxT3rj0ycwRvIbFTrTQcVuf3Sl4PIJjCWQkCmfWGFNQXoSycdoAa1HwMphhu2anLJiMjGhNpwb-Dwpz9n7CEkApDSjlm8qyI0vZpqGVDOX0g"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto pb-[80px] bg-background">
+<div class="p-md space-y-md">
+<!-- Search & Filters -->
+<div class="space-y-sm">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-sm py-sm bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-on-surface focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-all" placeholder="Search Patient ID..." type="text"/>
+</div>
+<div class="flex gap-sm overflow-x-auto pb-xs scrollbar-hide">
+<button class="whitespace-nowrap px-sm py-xs bg-primary-container text-on-primary-container rounded-full font-label-md text-label-md border border-primary-container">All</button>
+<button class="whitespace-nowrap px-sm py-xs bg-surface-container-lowest text-on-surface-variant rounded-full font-label-md text-label-md border border-outline-variant hover:bg-surface-container-low transition-colors">High Priority</button>
+<button class="whitespace-nowrap px-sm py-xs bg-surface-container-lowest text-on-surface-variant rounded-full font-label-md text-label-md border border-outline-variant hover:bg-surface-container-low transition-colors">Awaiting Bed</button>
+<button class="whitespace-nowrap px-sm py-xs bg-surface-container-lowest text-on-surface-variant rounded-full font-label-md text-label-md border border-outline-variant hover:bg-surface-container-low transition-colors">Isolation</button>
+</div>
+</div>
+<!-- Patient List -->
+<div class="space-y-md">
+<!-- Patient Card: High Priority -->
+<div class="bg-surface-container-lowest border border-error rounded-lg p-md shadow-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-error"></div>
+<div class="flex justify-between items-start mb-sm ml-xs">
+<div>
+<span class="font-data-mono text-data-mono text-on-surface">BSUTH-4092</span>
+<div class="flex gap-xs mt-xs">
+<span class="px-xs py-[2px] bg-error-container text-on-error-container rounded font-label-md text-label-md">High</span>
+<span class="px-xs py-[2px] bg-[#FEF3C7] text-[#92400E] rounded font-label-md text-label-md">Required</span>
+</div>
+</div>
+<span class="px-sm py-xs bg-surface-container text-on-surface-variant rounded font-label-md text-label-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">location_on</span> ER
+                        </span>
+</div>
+<div class="ml-xs mb-md pb-sm border-b border-surface-container-high">
+<div class="flex items-center gap-sm text-on-surface-variant font-body-md">
+<span class="material-symbols-outlined text-[18px]">pending_actions</span>
+<span>Awaiting Allocation</span>
+</div>
+</div>
+<div class="flex gap-sm ml-xs">
+<button class="flex-1 bg-primary text-on-primary py-sm rounded border border-primary font-label-md text-label-md hover:bg-opacity-90 active:scale-95 transition-all text-center">Assign Bed</button>
+<button class="flex-1 bg-surface-container-lowest text-on-surface border border-outline-variant py-sm rounded font-label-md text-label-md hover:bg-surface-container-low active:scale-95 transition-all text-center">View Details</button>
+</div>
+</div>
+<!-- Patient Card: Medium Priority -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md shadow-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-[#F59E0B]"></div>
+<div class="flex justify-between items-start mb-sm ml-xs">
+<div>
+<span class="font-data-mono text-data-mono text-on-surface">BSUTH-4088</span>
+<div class="flex gap-xs mt-xs">
+<span class="px-xs py-[2px] bg-[#FEF3C7] text-[#92400E] rounded font-label-md text-label-md">Medium</span>
+<span class="px-xs py-[2px] bg-[#DCFCE7] text-[#10B981] rounded font-label-md text-label-md">Cleared</span>
+</div>
+</div>
+<span class="px-sm py-xs bg-surface-container text-on-surface-variant rounded font-label-md text-label-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">location_on</span> Ward B
+                        </span>
+</div>
+<div class="ml-xs mb-md pb-sm border-b border-surface-container-high">
+<div class="flex items-center gap-sm text-on-surface-variant font-body-md">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span>Allocated</span>
+</div>
+</div>
+<div class="flex gap-sm ml-xs">
+<button class="flex-1 bg-surface-container-lowest text-on-surface border border-outline-variant py-sm rounded font-label-md text-label-md hover:bg-surface-container-low active:scale-95 transition-all text-center w-full">View Details</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center h-16 px-sm pb-safe bg-surface border-t border-outline-variant z-50">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-all duration-200 active:scale-95 w-full h-full">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</button>
+<button class="flex flex-col items-center justify-center text-primary font-semibold hover:bg-surface-container-low transition-all duration-200 active:scale-95 w-full h-full relative">
+<div class="absolute inset-0 bg-primary opacity-10 rounded-full w-12 h-12 m-auto -z-10"></div>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person_filled</span>
+<span class="font-label-md text-label-md">Patients</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-all duration-200 active:scale-95 w-full h-full">
+<span class="material-symbols-outlined">bed</span>
+<span class="font-label-md text-label-md">Beds</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-all duration-200 active:scale-95 w-full h-full">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-md text-label-md">Resources</span>
+</button>
+</nav>
+</body></html>

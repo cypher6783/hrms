@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Component Specification - BSUTH Lassa</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#e4e2e4",
+                      "on-primary-container": "#7c839b",
+                      "surface-container": "#f0edef",
+                      "surface": "#fcf8fa",
+                      "on-secondary-container": "#57657b",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed": "#dae2fd",
+                      "inverse-surface": "#303032",
+                      "outline-variant": "#c6c6cd",
+                      "secondary-fixed": "#d5e3fd",
+                      "surface-container-highest": "#e4e2e4",
+                      "on-secondary-fixed": "#0d1c2f",
+                      "surface-bright": "#fcf8fa",
+                      "on-tertiary-fixed": "#271901",
+                      "inverse-on-surface": "#f3f0f2",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "on-error": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "surface-dim": "#dcd9db",
+                      "primary": "#000000",
+                      "outline": "#76777d",
+                      "on-surface": "#1b1b1d",
+                      "primary-fixed-dim": "#bec6e0",
+                      "inverse-primary": "#bec6e0",
+                      "on-secondary-fixed-variant": "#3a485c",
+                      "on-surface-variant": "#45464d",
+                      "tertiary": "#000000",
+                      "error-container": "#ffdad6",
+                      "surface-container-high": "#eae7e9",
+                      "surface-container-low": "#f6f3f5",
+                      "surface-tint": "#565e74",
+                      "tertiary-container": "#271901",
+                      "on-primary-fixed": "#131b2e",
+                      "on-tertiary-fixed-variant": "#574425",
+                      "on-background": "#1b1b1d",
+                      "on-error-container": "#93000a",
+                      "tertiary-fixed-dim": "#dec29a",
+                      "primary-container": "#131b2e",
+                      "secondary-fixed-dim": "#b9c7e0",
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed": "#fcdeb5",
+                      "on-secondary": "#ffffff",
+                      "background": "#fcf8fa",
+                      "secondary": "#515f74",
+                      "secondary-container": "#d5e3fd",
+                      "error": "#ba1a1a",
+                      "on-tertiary-container": "#98805d"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "md": "16px",
+                      "margin-mobile": "16px",
+                      "xl": "32px",
+                      "lg": "24px",
+                      "margin-desktop": "32px",
+                      "xs": "4px",
+                      "gutter": "16px",
+                      "base": "4px",
+                      "sm": "8px"
+              },
+              "fontFamily": {
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "data-mono": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "display-lg-mobile": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "data-mono": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-sm": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "34px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+      </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen">
+<!-- Top Navigation (Contextual, No SideNav for Specification Screen as it's documentation) -->
+<header class="bg-surface border-b border-outline-variant flex justify-between items-center px-lg w-full h-16 fixed top-0 z-50">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary text-2xl">science</span>
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">System Component Specification</h1>
+</div>
+<div class="flex items-center gap-md">
+<div class="bg-surface-variant rounded-full px-sm py-xs flex items-center gap-xs">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">check_circle</span>
+<span class="font-label-md text-label-md text-on-surface-variant">System Status: Active</span>
+</div>
+<button class="text-on-surface-variant hover:bg-surface-container-highest rounded-full p-xs transition-all duration-200 ease-in-out">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-highest rounded-full p-xs transition-all duration-200 ease-in-out">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-highest rounded-full p-xs transition-all duration-200 ease-in-out">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<main class="pt-24 pb-xl px-margin-desktop max-w-7xl mx-auto space-y-xl">
+<div class="mb-lg border-b border-outline-variant pb-md">
+<h2 class="font-headline-md text-headline-md font-bold text-primary mb-sm">Reusable Status Components</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Standardized visual indicators for data state across the clinical system.</p>
+</div>
+<!-- Status Badges & Priority Badges Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+<!-- Bed/Resource Status -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-md">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Resource States</h3>
+<div class="flex flex-wrap gap-sm">
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-[#DCFCE7] text-[#10B981] font-data-mono text-data-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-current"></span> Available
+                    </span>
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-error-container text-on-error-container font-data-mono text-data-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-current"></span> Occupied
+                    </span>
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-secondary-container text-on-secondary-container font-data-mono text-data-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-current"></span> Cleaning
+                    </span>
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-surface-variant text-on-surface-variant font-data-mono text-data-mono border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">build</span> Maintenance
+                    </span>
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-tertiary-fixed text-on-tertiary-fixed font-data-mono text-data-mono">
+<span class="material-symbols-outlined text-[14px]">bookmark</span> Reserved
+                    </span>
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-primary-fixed text-on-primary-fixed font-data-mono text-data-mono">
+<span class="material-symbols-outlined text-[14px]">how_to_reg</span> Allocated
+                    </span>
+</div>
+</div>
+<!-- Priority Badges -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-md">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Priority Indicators</h3>
+<div class="flex flex-col gap-sm items-start">
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-error-container text-on-error-container font-label-md text-label-md uppercase font-bold border border-error">
+<span class="material-symbols-outlined text-[14px] text-error">priority_high</span> High Priority
+                    </span>
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-label-md uppercase font-bold border border-tertiary-fixed-dim">
+<span class="material-symbols-outlined text-[14px]">warning</span> Medium Priority
+                    </span>
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-surface-variant text-on-surface-variant font-label-md text-label-md uppercase border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">arrow_drop_down</span> Low Priority
+                    </span>
+</div>
+</div>
+<!-- Recommendation States -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-md lg:row-span-2">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Algorithm Recommendations</h3>
+<div class="flex flex-col gap-md">
+<div class="p-sm border border-outline-variant rounded flex justify-between items-center bg-surface-container-low">
+<span class="font-data-mono text-data-mono text-on-surface">Bed Transfer</span>
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-[#DCFCE7] text-[#10B981] font-label-md text-label-md border border-[#10B981]">
+                            Feasible
+                        </span>
+</div>
+<div class="p-sm border border-outline-variant rounded flex justify-between items-center bg-surface-container-low">
+<span class="font-data-mono text-data-mono text-on-surface">Discharge</span>
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-surface-variant text-on-surface-variant font-label-md text-label-md border border-outline-variant">
+                            Not Feasible
+                        </span>
+</div>
+<div class="p-sm border border-outline-variant rounded flex justify-between items-center bg-surface-container-low">
+<span class="font-data-mono text-data-mono text-on-surface">Isolation</span>
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-secondary-container text-on-secondary-container font-label-md text-label-md">
+                            Pending Review
+                        </span>
+</div>
+<div class="p-sm border border-outline-variant rounded flex justify-between items-center bg-surface-container-low">
+<span class="font-data-mono text-data-mono text-on-surface">Triage Alg 2</span>
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-primary text-on-primary font-label-md text-label-md">
+                            Accepted
+                        </span>
+</div>
+<div class="p-sm border border-outline-variant rounded flex justify-between items-center bg-surface-container-low opacity-60">
+<span class="font-data-mono text-data-mono text-on-surface">Triage Alg 3</span>
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-error text-on-error font-label-md text-label-md line-through decoration-on-error">
+                            Rejected
+                        </span>
+</div>
+<div class="p-sm border border-outline-variant rounded flex justify-between items-center bg-surface-container-low border-dashed border-outline">
+<span class="font-data-mono text-data-mono text-on-surface">Protocol A</span>
+<span class="inline-flex items-center gap-xs px-2 py-1 rounded bg-surface-variant text-on-surface-variant font-label-md text-label-md">
+                            Overridden
+                        </span>
+</div>
+</div>
+</div>
+<!-- System Indicators & Data Freshness -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-md lg:col-span-2">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">System &amp; Data Telemetry</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Alerts -->
+<div class="flex flex-col gap-sm">
+<div class="bg-error-container border-l-4 border-error p-sm rounded-r flex items-start gap-sm">
+<span class="material-symbols-outlined text-error mt-0.5">warning</span>
+<div>
+<p class="font-label-md text-label-md text-on-error-container font-bold uppercase">Critical Shortage</p>
+<p class="font-body-md text-body-md text-on-error-container text-sm">Ventilator inventory below 10% threshold.</p>
+</div>
+</div>
+<div class="bg-surface-variant border-l-4 border-outline-variant p-sm rounded-r flex items-start gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant mt-0.5">info</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant font-bold uppercase">Insufficient Data</p>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Lab results pending for complete analysis.</p>
+</div>
+</div>
+</div>
+<!-- Freshness -->
+<div class="flex flex-col gap-sm justify-center items-end border-l border-outline-variant pl-md">
+<div class="flex items-center gap-sm">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-[#10B981]"></span>
+</span>
+<span class="font-data-mono text-data-mono text-on-surface">Last updated 2m ago</span>
+</div>
+<div class="flex items-center gap-xs bg-surface-container-low px-sm py-xs rounded border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant text-[14px]">cloud_done</span>
+<span class="font-data-mono text-data-mono text-on-surface-variant">System Status: Active</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mb-lg border-b border-outline-variant pb-md pt-lg">
+<h2 class="font-headline-md text-headline-md font-bold text-primary mb-sm">Global System States</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Standardized patterns for non-ideal conditions and loading behaviors.</p>
+</div>
+<div class="space-y-xl">
+<!-- Loading Skeleton -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-md">Data Table Loading Pattern</h3>
+<div class="animate-pulse flex flex-col">
+<div class="h-10 bg-surface-container-high rounded mb-2 border-b border-outline-variant"></div>
+<div class="flex gap-4 p-sm border-b border-outline-variant">
+<div class="h-4 bg-surface-variant rounded w-1/4"></div>
+<div class="h-4 bg-surface-variant rounded w-1/4"></div>
+<div class="h-4 bg-surface-variant rounded w-1/4"></div>
+<div class="h-4 bg-surface-variant rounded w-1/4"></div>
+</div>
+<div class="flex gap-4 p-sm border-b border-outline-variant">
+<div class="h-4 bg-surface-variant rounded w-1/4"></div>
+<div class="h-4 bg-surface-variant rounded w-1/4"></div>
+<div class="h-4 bg-surface-variant rounded w-1/4"></div>
+<div class="h-4 bg-surface-variant rounded w-1/4"></div>
+</div>
+<div class="flex gap-4 p-sm border-b border-outline-variant">
+<div class="h-4 bg-surface-variant rounded w-1/4"></div>
+<div class="h-4 bg-surface-variant rounded w-1/4"></div>
+<div class="h-4 bg-surface-variant rounded w-1/4"></div>
+<div class="h-4 bg-surface-variant rounded w-1/4"></div>
+</div>
+</div>
+</div>
+<!-- Empty State -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-xl flex flex-col items-center justify-center min-h-[300px] text-center">
+<div class="bg-surface-container-high rounded-full p-lg mb-md">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant">person_off</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm font-bold text-on-surface mb-xs">No Patients Found</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md max-w-md">The current filter criteria returned no matching patient records in the active ward.</p>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded hover:bg-inverse-surface transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">filter_alt_off</span> Clear Filters
+                 </button>
+</div>
+<!-- Server Error -->
+<div class="bg-surface-container-lowest border border-error border-dashed rounded-xl p-xl flex flex-col items-center justify-center min-h-[300px] text-center bg-error-container/20">
+<div class="bg-error-container rounded-full p-lg mb-md text-error">
+<span class="material-symbols-outlined text-4xl">cloud_off</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm font-bold text-on-surface mb-xs">Connection Lost</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md max-w-md">The hospital server could not be reached. Please check your network connection or contact IT support if the issue persists.</p>
+<button class="border border-outline-variant text-on-surface font-label-md text-label-md px-md py-sm rounded hover:bg-surface-variant transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">refresh</span> Retry Connection
+                 </button>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lassa Fever Unit - Mobile Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#57657b",
+                        "on-error": "#ffffff",
+                        "tertiary": "#000000",
+                        "primary-container": "#131b2e",
+                        "on-surface": "#1b1b1d",
+                        "inverse-primary": "#bec6e0",
+                        "inverse-on-surface": "#f3f0f2",
+                        "surface": "#fcf8fa",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "surface-container": "#f0edef",
+                        "primary-fixed": "#dae2fd",
+                        "surface-container-highest": "#e4e2e4",
+                        "on-primary-fixed": "#131b2e",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#271901",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#565e74",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-dim": "#dcd9db",
+                        "on-tertiary-container": "#98805d",
+                        "tertiary-fixed": "#fcdeb5",
+                        "surface-bright": "#fcf8fa",
+                        "on-background": "#1b1b1d",
+                        "background": "#fcf8fa",
+                        "inverse-surface": "#303032",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "surface-container-high": "#eae7e9",
+                        "on-surface-variant": "#45464d",
+                        "secondary": "#515f74",
+                        "secondary-fixed": "#d5e3fd",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "surface-variant": "#e4e2e4",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f6f3f5",
+                        "secondary-container": "#d5e3fd",
+                        "on-tertiary-fixed": "#271901",
+                        "primary": "#000000",
+                        "outline": "#76777d",
+                        "on-primary-container": "#7c839b",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "outline-variant": "#c6c6cd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "margin-desktop": "32px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "gutter": "16px",
+                        "margin-mobile": "16px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "data-mono": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .pulse-border {
+            animation: pulse-border-animation 2s infinite;
+        }
+        @keyframes pulse-border-animation {
+            0% { box-shadow: 0 0 0 0 rgba(186, 26, 26, 0.4); }
+            70% { box-shadow: 0 0 0 4px rgba(186, 26, 26, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(186, 26, 26, 0); }
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-md h-14 bg-surface border-b border-outline-variant flat no shadows">
+<button class="text-primary active:opacity-80 transition-opacity duration-150 p-sm rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="clinical_notes">clinical_notes</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary tracking-tight">Lassa Fever Unit</h1>
+<button class="text-primary active:opacity-80 transition-opacity duration-150 p-sm rounded-full hover:bg-surface-container relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-[72px] px-margin-mobile flex flex-col gap-md">
+<!-- Critical Alert Stack -->
+<div class="bg-error-container border border-error rounded-lg p-md flex items-start gap-sm pulse-border">
+<span class="material-symbols-outlined text-error mt-0.5" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div class="flex-1">
+<h2 class="font-label-md text-label-md text-on-error-container">CRITICAL SHORTAGE</h2>
+<p class="font-body-md text-body-md text-on-error-container font-medium mt-xs">Ribavirin IV supplies critically low. Estimated depletion in 4 hours.</p>
+</div>
+</div>
+<!-- KPI Grid (Bento Style) -->
+<div class="grid grid-cols-2 gap-sm">
+<!-- Occupancy -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col justify-between shadow-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-error"></div>
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Occupancy</span>
+<span class="material-symbols-outlined text-error" data-icon="bed">bed</span>
+</div>
+<div>
+<span class="font-display-lg-mobile text-display-lg-mobile text-on-surface">85%</span>
+<span class="block font-body-md text-body-md text-error mt-xs font-medium">Near Capacity</span>
+</div>
+</div>
+<!-- Available Beds -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col justify-between shadow-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-secondary-fixed"></div>
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Avail. Beds</span>
+<span class="material-symbols-outlined text-primary" data-icon="king_bed">king_bed</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="font-display-lg-mobile text-display-lg-mobile text-on-surface">04</span>
+<span class="font-label-md text-label-md text-on-surface-variant">/30</span>
+</div>
+</div>
+<!-- Awaiting Allocation -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col justify-between shadow-sm col-span-2 relative overflow-hidden">
+<div class="absolute top-0 left-0 h-full w-1 bg-tertiary-fixed-dim"></div>
+<div class="flex justify-between items-center">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Awaiting Allocation</span>
+<div class="flex items-baseline gap-sm mt-xs">
+<span class="font-display-lg-mobile text-display-lg-mobile text-on-surface">03</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-label-md">High Priority</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[32px]" data-icon="group_add">group_add</span>
+</div>
+</div>
+</div>
+<!-- Action Required Section -->
+<section class="mt-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-sm flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary" data-icon="assignment_late">assignment_late</span>
+                Action Required
+            </h3>
+<div class="flex flex-col gap-sm">
+<!-- Action 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md shadow-sm active:border-primary active:bg-surface-container-low transition-colors">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-error-container text-on-error-container font-label-md text-label-md mb-xs">Immediate</span>
+<h4 class="font-body-lg text-body-lg text-on-surface font-semibold">Initiate IV Ribavirin Protocol</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">Patient: PT-8834 (Bed 12)</p>
+</div>
+<button class="bg-primary text-on-primary p-2 rounded-lg font-label-md text-label-md">Action</button>
+</div>
+</div>
+<!-- Action 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md shadow-sm active:border-primary active:bg-surface-container-low transition-colors">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-label-md mb-xs">Pending</span>
+<h4 class="font-body-lg text-body-lg text-on-surface font-semibold">Assign Isolation Bed</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">Incoming Triage (ETA: 15m)</p>
+</div>
+<button class="border border-outline bg-surface-container text-on-surface p-2 rounded-lg font-label-md text-label-md">Assign</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 24h Unit Pulse Chart (Placeholder visually represented) -->
+<section class="mt-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-sm">24h Unit Pulse</h3>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm h-48 flex items-end gap-1 pb-lg relative">
+<!-- Decorative subtle grid lines -->
+<div class="absolute inset-0 border-b border-outline-variant opacity-20 top-1/4"></div>
+<div class="absolute inset-0 border-b border-outline-variant opacity-20 top-2/4"></div>
+<div class="absolute inset-0 border-b border-outline-variant opacity-20 top-3/4"></div>
+<!-- Chart Bars (Simulated Activity) -->
+<div class="w-full bg-secondary-fixed-dim rounded-t-sm h-[30%] opacity-80"></div>
+<div class="w-full bg-secondary-fixed-dim rounded-t-sm h-[45%] opacity-80"></div>
+<div class="w-full bg-secondary-fixed-dim rounded-t-sm h-[60%] opacity-80"></div>
+<div class="w-full bg-primary-fixed-dim rounded-t-sm h-[85%]"></div>
+<div class="w-full bg-primary-fixed-dim rounded-t-sm h-[95%]"></div>
+<div class="w-full bg-error rounded-t-sm h-[100%] opacity-90 relative group">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-[10px] px-1 py-0.5 rounded whitespace-nowrap hidden group-hover:block">Peak Occ.</div>
+</div>
+<div class="w-full bg-primary-fixed-dim rounded-t-sm h-[80%]"></div>
+<div class="w-full bg-secondary-fixed-dim rounded-t-sm h-[65%] opacity-80"></div>
+<div class="w-full bg-secondary-fixed-dim rounded-t-sm h-[50%] opacity-80"></div>
+<div class="w-full bg-secondary-fixed-dim rounded-t-sm h-[40%] opacity-80"></div>
+<div class="absolute bottom-2 left-0 w-full flex justify-between px-md text-on-surface-variant font-data-mono text-[10px]">
+<span>00:00</span>
+<span>12:00</span>
+<span>Now</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-base py-xs pb-safe bg-surface border-t border-outline-variant flat no shadows md:hidden">
+<a class="flex flex-col items-center justify-center text-primary font-bold active:scale-95 transition-transform duration-100 hover:bg-surface-container-low p-sm rounded-lg w-16" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-95 transition-transform duration-100 hover:bg-surface-container-low p-sm rounded-lg w-16" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-md text-label-md mt-1">Patients</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-95 transition-transform duration-100 hover:bg-surface-container-low p-sm rounded-lg w-16" href="#">
+<span class="material-symbols-outlined" data-icon="bed">bed</span>
+<span class="font-label-md text-label-md mt-1">Beds</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-95 transition-transform duration-100 hover:bg-surface-container-low p-sm rounded-lg w-16" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md mt-1">Recs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-95 transition-transform duration-100 hover:bg-surface-container-low p-sm rounded-lg w-16" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-md text-label-md mt-1">Resources</span>
+</a>
+</nav>
+</body></html>

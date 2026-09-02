@@ -1,0 +1,297 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Recommendation Center - BSUTH Lassa Unit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary": "#000000",
+                      "on-secondary-fixed": "#0d1c2f",
+                      "inverse-surface": "#303032",
+                      "tertiary-fixed": "#fcdeb5",
+                      "secondary-fixed": "#d5e3fd",
+                      "error": "#ba1a1a",
+                      "surface-tint": "#565e74",
+                      "on-tertiary": "#ffffff",
+                      "surface-dim": "#dcd9db",
+                      "secondary-container": "#d5e3fd",
+                      "tertiary-container": "#271901",
+                      "on-error-container": "#93000a",
+                      "on-secondary-container": "#57657b",
+                      "surface-container-low": "#f6f3f5",
+                      "on-surface-variant": "#45464d",
+                      "on-surface": "#1b1b1d",
+                      "surface-bright": "#fcf8fa",
+                      "tertiary-fixed-dim": "#dec29a",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "error-container": "#ffdad6",
+                      "on-tertiary-fixed": "#271901",
+                      "on-error": "#ffffff",
+                      "primary-fixed-dim": "#bec6e0",
+                      "primary-container": "#131b2e",
+                      "surface-container": "#f0edef",
+                      "on-secondary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-on-surface": "#f3f0f2",
+                      "surface-variant": "#e4e2e4",
+                      "background": "#fcf8fa",
+                      "primary-fixed": "#dae2fd",
+                      "outline-variant": "#c6c6cd",
+                      "on-tertiary-container": "#98805d",
+                      "on-primary-container": "#7c839b",
+                      "surface-container-high": "#eae7e9",
+                      "surface": "#fcf8fa",
+                      "on-background": "#1b1b1d",
+                      "on-primary-fixed": "#131b2e",
+                      "tertiary": "#000000",
+                      "on-tertiary-fixed-variant": "#574425",
+                      "secondary-fixed-dim": "#b9c7e0",
+                      "secondary": "#515f74",
+                      "outline": "#76777d",
+                      "on-secondary-fixed-variant": "#3a485c",
+                      "surface-container-highest": "#e4e2e4",
+                      "inverse-primary": "#bec6e0",
+                      "on-primary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "base": "4px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "32px",
+                      "xl": "32px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "xs": "4px",
+                      "sm": "8px"
+              },
+              "fontFamily": {
+                      "headline-sm": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "display-lg-mobile": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "data-mono": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-md": ["Inter"],
+                      "display-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "display-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased flex h-screen overflow-hidden">
+<!-- SideNavBar (Permanent) -->
+<nav class="fixed left-0 top-0 h-screen w-[280px] bg-surface-container-lowest border-r border-outline-variant flex flex-col py-md px-sm z-50">
+<div class="flex items-center gap-sm mb-xl px-sm">
+<img class="w-8 h-8 object-cover rounded" data-alt="A minimalist, stoic clinical icon representing a medical unit. It is rendered in high-contrast black and white, suitable for a healthcare resource manager dashboard. The style is utilitarian and precise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBit_GmNzIgVBmv3MdzfpXU5A5JVbQMwdXTvlyhvUNB6nHZxzsxa-34JCEKEB4oOW4Li4vScEGSW6st9Kiic-JVwUhGtA_ZzuEDos5wd_hLBY0BQNYZFKr59G_s3027wWz_-AUMdhQYQBE7MsX4vtF9okG2bVRRsdtTduD2vNM4TODmBSzDNqQR3cHtHh5EHg6WG1MEwQnq-7a1KSqgyZft0ypOJe16wihjPgc-v5dPewREm1Tti6rvIA">
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">BSUTH Lassa</h1>
+<p class="font-label-md text-label-md text-on-surface-variant font-normal">Resource Manager</p>
+</div>
+</div>
+<ul class="flex flex-col gap-base font-body-md text-body-md">
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+                    Patients
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+                    Admissions
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="bed">bed</span>
+                    Beds &amp; Wards
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+                    Resources
+                </a>
+</li>
+<!-- Active Tab -->
+<li class="">
+<a class="flex items-center gap-md px-md py-sm text-primary font-bold border-r-4 border-primary bg-surface-container transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined fill" data-icon="bolt">bolt</span>
+                    Recommendation Center
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                    Audit
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+</nav>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-[280px] h-16 bg-surface border-b border-outline-variant flex justify-between items-center px-lg z-40">
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">System Status: Active</h2>
+<div class="flex items-center gap-md">
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded-full transition-all duration-200 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined" data-icon="refresh">refresh</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded-full transition-all duration-200 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded-full transition-all duration-200 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-[280px] mt-16 p-gutter w-full h-[calc(100vh-64px)] overflow-hidden flex gap-gutter bg-background">
+<!-- Left Column: Active Recommendations List -->
+<section class="w-1/3 min-w-[320px] max-w-[400px] h-full flex flex-col bg-surface-container-lowest border border-outline-variant rounded-DEFAULT shadow-[0px_4px_6px_-1px_rgba(15,23,42,0.08)]">
+<header class="p-md border-b border-outline-variant bg-surface-bright rounded-t-DEFAULT">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Pending Recommendations</h3>
+<p class="font-label-md text-label-md text-on-surface-variant font-normal">3 active recommendations require review.</p>
+</header>
+<div class="flex-1 overflow-y-auto p-sm flex flex-col gap-sm">
+<!-- Active Item -->
+<div class="p-md border-l-4 border-primary bg-surface-container-low rounded-r-DEFAULT cursor-pointer flex flex-col gap-xs transition-colors hover:bg-surface-container">
+<div class="flex justify-between items-start">
+<span class="font-label-md text-label-md text-error bg-error-container px-2 py-1 rounded-sm uppercase">High Priority</span>
+<span class="font-data-mono text-data-mono text-on-surface-variant text-xs">2m ago</span>
+</div>
+<h4 class="font-body-lg text-body-lg text-on-surface font-semibold mt-1">Musa, Ibrahim</h4>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-1">Bed Assignment Required</p>
+</div>
+<!-- Inactive Items -->
+<div class="p-md border border-outline-variant bg-surface-container-lowest rounded-DEFAULT cursor-pointer flex flex-col gap-xs transition-colors hover:bg-surface-container-low">
+<div class="flex justify-between items-start">
+<span class="font-label-md text-label-md text-secondary bg-secondary-container px-2 py-1 rounded-sm uppercase">Medium Priority</span>
+<span class="font-data-mono text-data-mono text-on-surface-variant text-xs">15m ago</span>
+</div>
+<h4 class="font-body-lg text-body-lg text-on-surface font-semibold mt-1">Adeyemi, Samuel</h4>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-1">Equipment Transfer</p>
+</div>
+<div class="p-md border border-outline-variant bg-surface-container-lowest rounded-DEFAULT cursor-pointer flex flex-col gap-xs transition-colors hover:bg-surface-container-low">
+<div class="flex justify-between items-start">
+<span class="font-label-md text-label-md text-on-primary-container bg-surface-variant px-2 py-1 rounded-sm uppercase">Low Priority</span>
+<span class="font-data-mono text-data-mono text-on-surface-variant text-xs">1h ago</span>
+</div>
+<h4 class="font-body-lg text-body-lg text-on-surface font-semibold mt-1">Okonkwo, Chidi</h4>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-1">Discharge Review</p>
+</div>
+</div>
+</section>
+<!-- Right Column: Recommendation Detail -->
+<section class="flex-1 h-full flex flex-col overflow-y-auto bg-surface-container-lowest border border-outline-variant rounded-DEFAULT shadow-[0px_4px_6px_-1px_rgba(15,23,42,0.08)]">
+<!-- Patient Header -->
+<header class="p-lg border-b border-outline-variant bg-surface-bright rounded-t-DEFAULT flex justify-between items-end">
+<div>
+<div class="flex items-center gap-sm mb-2">
+<span class="font-label-md text-label-md text-error border border-error px-2 py-1 rounded-sm uppercase bg-surface-container-lowest">Suspected Case</span>
+<span class="font-label-md text-label-md text-error bg-error-container px-2 py-1 rounded-sm uppercase">High Priority</span>
+</div>
+<h2 class="font-display-lg text-display-lg text-on-surface">Musa, Ibrahim</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-1">Patient ID: P-88392 • Age 42 • Male</p>
+</div>
+</header>
+<!-- Recommendation Canvas -->
+<div class="p-lg flex flex-col gap-lg flex-1">
+<!-- Primary Recommendation Banner -->
+<div class="bg-primary text-on-primary p-md flex items-center justify-between rounded-DEFAULT border border-primary-container">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-3xl" data-icon="verified">verified</span>
+<div>
+<p class="font-label-md text-label-md text-primary-fixed uppercase tracking-wider mb-1">Recommended Allocation</p>
+<h3 class="font-headline-md text-headline-md">Assign to Bed B-014</h3>
+</div>
+</div>
+<div class="text-right"><span class="font-display-lg text-display-lg block leading-none">Score: 98</span><span class="font-label-md text-label-md text-primary-fixed uppercase">Allocation Score</span></div>
+</div>
+<!-- Bento Grid Layout for Details -->
+<div class="grid grid-cols-2 gap-gutter">
+<!-- Feasibility Checklist -->
+<div class="border border-outline-variant rounded-DEFAULT p-md bg-surface-container-lowest"><h4 class="font-headline-sm text-headline-sm text-on-surface border-b border-outline-variant pb-2 mb-sm">Safety &amp; Feasibility Checks</h4><p class="font-label-md text-label-md text-[#10B981] mb-sm">FEASIBLE: All mandatory safety constraints satisfied</p><ul class="flex flex-col gap-2 font-data-mono text-data-mono text-on-surface"><li class="flex items-center gap-sm"><span class="material-symbols-outlined text-[#10B981] text-lg" data-icon="check_circle">check_circle</span> Isolation level compatible</li><li class="flex items-center gap-sm"><span class="material-symbols-outlined text-[#10B981] text-lg" data-icon="check_circle">check_circle</span> Required bed type available</li><li class="flex items-center gap-sm"><span class="material-symbols-outlined text-[#10B981] text-lg" data-icon="check_circle">check_circle</span> Cleaning protocol verified</li><li class="flex items-center gap-sm"><span class="material-symbols-outlined text-[#10B981] text-lg" data-icon="check_circle">check_circle</span> Essential equipment proximal</li></ul></div>
+<!-- Clinical Reasoning -->
+<div class="border border-outline-variant rounded-DEFAULT p-md bg-surface-container-lowest">
+<h4 class="font-headline-sm text-headline-sm text-on-surface border-b border-outline-variant pb-2 mb-sm">Why this option was recommended</h4>
+<ul class="list-disc list-inside flex flex-col gap-2 font-body-md text-body-md text-on-surface-variant">
+<li class="">Provides lowest transport latency from current triage area (Est. 2 mins).</li>
+<li class="">Meets exact isolation requirements for highly suspected cases.</li>
+<li class="">Proximity to specialized respiratory equipment pool.</li>
+</ul>
+</div>
+</div>
+<!-- Alternatives Considered -->
+<div class="border border-outline-variant rounded-DEFAULT overflow-hidden">
+<h4 class="font-headline-sm text-headline-sm text-on-surface p-md bg-surface-container-low border-b border-outline-variant">Other Options Evaluated</h4>
+<table class="w-full text-left border-collapse font-body-md text-body-md">
+<tbody><tr class="border-b border-surface-variant bg-surface-container-lowest">
+<td class="p-sm px-md font-data-mono text-data-mono text-on-surface">Bed B-009</td>
+<td class="p-sm px-md text-error font-medium">REJECTED: Isolation Incompatible</td>
+</tr>
+<tr class="bg-surface-container-lowest">
+<td class="p-sm px-md font-data-mono text-data-mono text-on-surface">Bed B-021</td>
+<td class="p-sm px-md text-error font-medium">REJECTED: Cleaning not verified</td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<!-- Action Area (Footer) -->
+<footer class="p-md border-t border-outline-variant bg-surface-bright rounded-b-DEFAULT flex gap-sm justify-end items-center mt-auto"><p class="font-label-md text-label-md text-on-surface-variant mr-auto">Recommendation requires review by an authorized healthcare worker before allocation.</p>
+<button class="px-md py-sm font-label-md text-label-md text-on-surface-variant border border-outline-variant rounded-DEFAULT hover:bg-surface-variant transition-colors">
+                    Manual Override
+                </button>
+<div class="w-px h-6 bg-outline-variant mx-2"></div>
+<button class="px-md py-sm font-label-md text-label-md text-on-surface-variant border border-outline-variant rounded-DEFAULT hover:bg-error-container hover:text-error hover:border-error transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm" data-icon="close">close</span> Decline
+                </button>
+<button class="px-lg py-sm font-label-md text-label-md bg-primary text-on-primary rounded-DEFAULT hover:bg-on-surface transition-colors flex items-center gap-xs shadow-sm"><span class="material-symbols-outlined text-sm" data-icon="check">check</span> Accept Recommendation</button>
+</footer>
+</section>
+</main>
+
+
+</body></html>

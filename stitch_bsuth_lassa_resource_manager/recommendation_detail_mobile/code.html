@@ -1,0 +1,251 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>Allocation Review - Lassa Fever Unit</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#57657b",
+                        "on-error": "#ffffff",
+                        "tertiary": "#000000",
+                        "primary-container": "#131b2e",
+                        "on-surface": "#1b1b1d",
+                        "inverse-primary": "#bec6e0",
+                        "inverse-on-surface": "#f3f0f2",
+                        "surface": "#fcf8fa",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "surface-container": "#f0edef",
+                        "primary-fixed": "#dae2fd",
+                        "surface-container-highest": "#e4e2e4",
+                        "on-primary-fixed": "#131b2e",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#271901",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#565e74",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-dim": "#dcd9db",
+                        "on-tertiary-container": "#98805d",
+                        "tertiary-fixed": "#fcdeb5",
+                        "surface-bright": "#fcf8fa",
+                        "on-background": "#1b1b1d",
+                        "background": "#fcf8fa",
+                        "inverse-surface": "#303032",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "surface-container-high": "#eae7e9",
+                        "on-surface-variant": "#45464d",
+                        "secondary": "#515f74",
+                        "secondary-fixed": "#d5e3fd",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "surface-variant": "#e4e2e4",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f6f3f5",
+                        "secondary-container": "#d5e3fd",
+                        "on-tertiary-fixed": "#271901",
+                        "primary": "#000000",
+                        "outline": "#76777d",
+                        "on-primary-container": "#7c839b",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "outline-variant": "#c6c6cd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "margin-desktop": "32px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "gutter": "16px",
+                        "margin-mobile": "16px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "data-mono": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Safe area support for mobile devices */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+<!-- Task-Focused Header (Navigation Shell Suppressed per guidelines) -->
+<header class="sticky top-0 z-40 bg-surface border-b border-outline-variant px-md h-[56px] flex items-center justify-between shadow-sm">
+<button aria-label="Go back" class="flex items-center justify-center p-sm -ml-sm text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm text-on-surface">Allocation Review</h1>
+<div class="w-10"></div> <!-- Spacer for center alignment -->
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto px-md py-md flex flex-col gap-md pb-[180px]">
+<!-- 1. Patient Profile -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md">
+<div class="flex items-start justify-between">
+<div>
+<h2 class="font-label-md text-label-md text-on-surface-variant mb-xs">Patient</h2>
+<div class="font-headline-md text-headline-md text-on-surface mb-xs">Musa Ibrahim</div>
+<div class="font-body-md text-body-md text-on-surface-variant flex items-center gap-sm">
+<span class="">Age 42</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-error font-medium">Suspected Case</span>
+</div>
+</div>
+<div class="bg-surface-container h-12 w-12 rounded-full flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">person</span>
+</div>
+</div>
+</section>
+<!-- 2. Recommendation Target -->
+<section class="bg-surface-container-lowest border-2 border-primary rounded-lg p-md relative shadow-[0px_4px_6px_-1px_rgba(15,23,42,0.08)]">
+<div class="absolute top-0 right-0 bg-primary text-on-primary px-sm py-xs rounded-bl-lg rounded-tr-sm font-label-md text-label-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] icon-filled">bolt</span>
+                Best Match
+            </div>
+<h2 class="font-label-md text-label-md text-on-surface-variant mb-sm">Recommended Allocation</h2>
+<div class="flex items-baseline gap-sm mb-xs">
+<span class="font-body-md text-body-md text-on-surface-variant">Allocate to</span>
+<span class="font-display-lg-mobile text-display-lg-mobile text-on-surface">Bed B-014</span>
+</div>
+<div class="inline-flex items-center gap-xs bg-surface-container px-sm py-xs rounded-md border border-outline-variant mt-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">pie_chart</span>
+<span class="font-data-mono text-data-mono text-primary">Allocation Score: 98</span>
+</div>
+</section><section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md"><h3 class="font-label-md text-label-md text-on-surface-variant mb-sm">Allocation Context</h3><div class="grid grid-cols-2 gap-sm"><div class="flex flex-col"><span class="font-label-md text-on-surface-variant">Occupancy</span><span class="font-data-mono text-on-surface">85%</span></div><div class="flex flex-col"><span class="font-label-md text-on-surface-variant">Suitable Beds</span><span class="font-data-mono text-on-surface">04</span></div><div class="flex flex-col"><span class="font-label-md text-on-surface-variant">Queue Pressure</span><span class="font-data-mono text-on-surface">Medium</span></div><div class="flex flex-col"><span class="font-label-md text-on-surface-variant">Est. Latency</span><span class="font-data-mono text-on-surface">2 mins</span></div></div></section>
+<!-- 3. Feasibility Checklist -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md">
+<div class="mb-md border-b border-outline-variant pb-sm"><h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Safety &amp; Feasibility Checks</h3><div class="inline-flex items-center gap-xs text-primary font-label-md text-label-md"><span class="material-symbols-outlined text-[16px] icon-filled">verified</span>FEASIBLE: All mandatory safety constraints satisfied</div></div>
+<ul class="flex flex-col gap-sm">
+<li class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary icon-filled mt-[2px]">check_circle</span>
+<div>
+<div class="font-body-md text-body-md text-on-surface font-medium">Isolation Compatible</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Negative pressure verified</div>
+</div>
+</li>
+<li class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary icon-filled mt-[2px]">check_circle</span>
+<div>
+<div class="font-body-md text-body-md text-on-surface font-medium">Bed Type Compatible</div>
+<div class="font-label-md text-label-md text-on-surface-variant">ICU configured</div>
+</div>
+</li>
+<li class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary icon-filled mt-[2px]">check_circle</span>
+<div>
+<div class="font-body-md text-body-md text-on-surface font-medium">Cleaning Verified</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Terminal clean completed 08:00</div>
+</div>
+</li>
+<li class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary icon-filled mt-[2px]">check_circle</span>
+<div>
+<div class="font-body-md text-body-md text-on-surface font-medium">Required equipment available</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Ventilator on standby</div>
+</div>
+</li>
+<li class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary icon-filled mt-[2px]">check_circle</span>
+<div>
+<div class="font-body-md text-body-md text-on-surface font-medium">Required staffing available</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Assigned to Dr. Chen's rotation</div>
+</div>
+</li>
+</ul>
+</section>
+<!-- 4. Rationale (Why) -->
+<section class="bg-surface-container-low border border-outline-variant rounded-lg p-md">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-md">Why this option was recommended</h3>
+<div class="grid grid-cols-1 gap-sm">
+<div class="flex items-center gap-sm bg-surface-container-lowest p-sm border border-outline-variant rounded-md">
+<span class="material-symbols-outlined text-on-surface-variant">timer</span>
+<span class="font-body-md text-body-md text-on-surface">Lowest latency to admission</span>
+</div>
+<div class="flex items-center gap-sm bg-surface-container-lowest p-sm border border-outline-variant rounded-md">
+<span class="material-symbols-outlined text-on-surface-variant">local_hospital</span>
+<span class="font-body-md text-body-md text-on-surface">Appropriate clinical level</span>
+</div>
+<div class="flex items-center gap-sm bg-surface-container-lowest p-sm border border-outline-variant rounded-md">
+<span class="material-symbols-outlined text-on-surface-variant">medical_services</span>
+<span class="font-body-md text-body-md text-on-surface">Critical equipment proximal</span>
+</div>
+</div>
+</section>
+<!-- 5. Alternatives -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-md">Alternatives Considered</h3>
+<div class="flex flex-col gap-sm">
+<div class="flex items-center justify-between border-b border-outline-variant pb-sm last:border-0 last:pb-0">
+<div class="font-data-mono text-data-mono text-on-surface">B-009</div>
+<div class="flex items-center gap-xs text-error">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+<span class="font-label-md text-label-md">Isolation protocols mismatch</span>
+</div>
+</div>
+<div class="flex items-center justify-between border-b border-outline-variant pb-sm last:border-0 last:pb-0">
+<div class="font-data-mono text-data-mono text-on-surface">B-021</div>
+<div class="flex items-center gap-xs text-error">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+<span class="font-label-md text-label-md">Pending terminal clean</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- 6. Sticky Actions -->
+<footer class="fixed bottom-0 left-0 w-full bg-surface border-t border-outline-variant px-md py-md pb-safe z-50 flex flex-col gap-md shadow-[0px_-4px_6px_-1px_rgba(15,23,42,0.05)]"><div class="bg-surface-container-low p-sm rounded-md border border-outline-variant mb-xs"><p class="font-label-md text-label-md text-on-surface-variant text-center">Recommendation requires review by an authorized healthcare worker before allocation.</p></div><div class="flex gap-md"><button class="flex-1 h-12 bg-surface border border-outline text-on-surface font-label-md text-label-md rounded-lg flex items-center justify-center transition-colors hover:bg-surface-container active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1">Decline</button><button class="flex-[2] h-12 bg-primary text-on-primary font-label-md text-label-md rounded-lg flex items-center justify-center transition-all hover:opacity-90 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1">Accept Recommendation</button></div><button class="w-full text-center font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Manual Override</button></footer>
+
+
+</body></html>

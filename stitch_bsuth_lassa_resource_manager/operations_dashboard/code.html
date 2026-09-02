@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lassa Fever Unit - Mobile Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#000000",
+                        "on-tertiary-fixed": "#271901",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "primary-fixed": "#dae2fd",
+                        "surface-container": "#f0edef",
+                        "on-secondary-container": "#57657b",
+                        "surface-variant": "#e4e2e4",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "tertiary-container": "#271901",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "background": "#fcf8fa",
+                        "surface-bright": "#fcf8fa",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#1b1b1d",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f6f3f5",
+                        "surface-dim": "#dcd9db",
+                        "secondary-container": "#d5e3fd",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e4e2e4",
+                        "on-surface": "#1b1b1d",
+                        "surface-tint": "#565e74",
+                        "on-primary-container": "#7c839b",
+                        "tertiary-fixed": "#fcdeb5",
+                        "on-surface-variant": "#45464d",
+                        "inverse-primary": "#bec6e0",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#131b2e",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-container": "#98805d",
+                        "surface": "#fcf8fa",
+                        "surface-container-high": "#eae7e9",
+                        "secondary-fixed": "#d5e3fd",
+                        "inverse-surface": "#303032",
+                        "primary-container": "#131b2e",
+                        "error-container": "#ffdad6",
+                        "primary": "#000000",
+                        "secondary": "#515f74",
+                        "outline": "#76777d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "margin-desktop": "32px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "data-mono": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "display-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased pb-[80px] pt-[56px] md:pt-[64px]">
+<!-- TopAppBar (Mobile) -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-md h-14 bg-surface dark:bg-inverse-surface text-primary dark:text-primary-fixed-dim border-b border-outline-variant dark:border-outline md:hidden">
+<button class="p-2 -ml-2 text-primary hover:bg-surface-container transition-colors rounded-full active:opacity-80">
+<span class="material-symbols-outlined" data-icon="clinical_notes" style="font-variation-settings: 'FILL' 1;">clinical_notes</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed-dim">Lassa Fever Unit</h1>
+<button class="p-2 -mr-2 text-primary hover:bg-surface-container transition-colors rounded-full active:opacity-80">
+<span class="material-symbols-outlined" data-icon="notifications" style="font-variation-settings: 'FILL' 1;">notifications</span>
+</button>
+</header>
+<!-- TopAppBar (Desktop - Hidden on Mobile) -->
+<header class="hidden md:flex fixed top-0 w-full z-50 justify-between items-center px-md h-16 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline">
+<div class="flex items-center gap-4">
+<button class="p-2 -ml-2 text-primary hover:bg-surface-container transition-colors rounded-full active:opacity-80">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Lassa Fever Unit Command</h1>
+</div>
+<!-- Desktop Navigation Cluster -->
+<nav class="flex gap-1 bg-surface-container-low rounded-lg p-1">
+<a class="px-4 py-2 rounded-md bg-secondary-container text-on-secondary-container font-label-md text-label-md flex items-center gap-2 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">dashboard</span> Dashboard
+             </a>
+<a class="px-4 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-highest font-label-md text-label-md flex items-center gap-2 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">group</span> Patients
+             </a>
+<a class="px-4 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-highest font-label-md text-label-md flex items-center gap-2 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">bed</span> Beds
+             </a>
+<a class="px-4 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-highest font-label-md text-label-md flex items-center gap-2 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">analytics</span> Recs
+             </a>
+<a class="px-4 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-highest font-label-md text-label-md flex items-center gap-2 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span> Resources
+             </a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
+<span class="font-label-md text-label-md">Live Sync</span>
+</div>
+<button class="p-2 text-primary hover:bg-surface-container transition-colors rounded-full active:opacity-80">
+<span class="material-symbols-outlined" data-icon="notifications" style="font-variation-settings: 'FILL' 1;">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-md text-label-md ml-2 border border-outline-variant">
+                SC
+            </div>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto p-margin-mobile md:p-margin-desktop grid grid-cols-1 md:grid-cols-12 gap-md md:gap-gutter">
+<!-- System Status Bar (Mobile specific) -->
+<div class="col-span-1 md:col-span-12 flex justify-between items-center py-xs md:hidden">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-[#10B981]"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">Live</span>
+</div>
+<span class="font-label-md text-label-md text-outline">Updated 2m ago</span>
+</div>
+<!-- Key Metrics Grid -->
+<section class="col-span-1 md:col-span-12 grid grid-cols-2 md:grid-cols-4 gap-sm md:gap-md">
+<!-- Occupancy -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-sm md:p-md flex flex-col justify-between">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant">Occupancy</span>
+<span class="material-symbols-outlined text-outline text-[16px]">bar_chart</span>
+</div>
+<div>
+<div class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary">85%</div>
+<div class="w-full bg-surface-variant h-1 mt-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[85%]"></div>
+</div>
+</div>
+</div>
+<!-- Available Beds -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-sm md:p-md flex flex-col justify-between">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant">Available Beds</span>
+<span class="material-symbols-outlined text-outline text-[16px]">bed</span>
+</div>
+<div>
+<div class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary">04</div>
+<div class="font-label-md text-label-md text-outline mt-1 text-on-surface-variant">of 30 Total</div>
+</div>
+</div>
+<!-- Awaiting Allocation -->
+<div class="bg-surface-container-lowest border border-[#F59E0B] bg-[#FEF3C7] bg-opacity-20 rounded-lg p-sm md:p-md flex flex-col justify-between">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-md text-label-md text-[#B45309]">Awaiting Allocation</span>
+<span class="material-symbols-outlined text-[#B45309] text-[16px]">pending_actions</span>
+</div>
+<div>
+<div class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-[#92400E]">03</div>
+<div class="font-label-md text-label-md mt-1 text-[#B45309] flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">warning</span> High Priority
+                    </div>
+</div>
+</div>
+<!-- Critical Shortages -->
+<div class="bg-surface-container-lowest border border-error bg-error-container bg-opacity-30 rounded-lg p-sm md:p-md flex flex-col justify-between">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-md text-label-md text-error">Critical Shortages</span>
+<span class="material-symbols-outlined text-error text-[16px]">inventory_2</span>
+</div>
+<div>
+<div class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-error">01</div>
+<div class="font-label-md text-label-md mt-1 text-error flex items-center gap-1">
+                        Ribavirin IV
+                    </div>
+</div>
+</div>
+</section>
+<!-- Action Required Section -->
+<section class="col-span-1 md:col-span-8 flex flex-col gap-sm">
+<h2 class="font-headline-sm text-headline-sm text-primary mb-xs mt-md md:mt-0 flex items-center gap-2 border-b border-outline-variant pb-2">
+<span class="material-symbols-outlined text-[20px] text-error" style="font-variation-settings: 'FILL' 1;">error</span> 
+                Action Required
+            </h2>
+<!-- Action Item 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-sm md:p-md flex flex-col md:flex-row md:items-center justify-between gap-md relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="flex flex-col gap-1 pl-2">
+<div class="flex items-center gap-2">
+<span class="bg-error-container text-on-error-container px-2 py-0.5 rounded-full font-label-md text-[10px] uppercase tracking-wider">Urgent Rec</span>
+<span class="font-data-mono text-data-mono text-on-surface-variant">PT-8834</span>
+</div>
+<div class="font-body-md text-body-md font-semibold text-primary">Initiate IV Ribavirin Protocol</div>
+<div class="font-body-md text-[12px] text-on-surface-variant">Lab results confirm Lassa PCR positive. Temp 39.2°C.</div>
+</div>
+<div class="flex gap-2 w-full md:w-auto mt-2 md:mt-0 pl-2 md:pl-0">
+<button class="flex-1 md:flex-none px-4 py-2 border border-outline-variant text-on-surface-variant font-label-md text-label-md rounded-md hover:bg-surface-container transition-colors text-center">Review</button>
+<button class="flex-1 md:flex-none px-4 py-2 bg-primary text-on-primary font-label-md text-label-md rounded-md hover:bg-surface-tint transition-colors text-center">Acknowledge</button>
+</div>
+</div>
+<!-- Action Item 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-sm md:p-md flex flex-col md:flex-row md:items-center justify-between gap-md relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#F59E0B]"></div>
+<div class="flex flex-col gap-1 pl-2">
+<div class="flex items-center gap-2">
+<span class="bg-[#FEF3C7] text-[#B45309] px-2 py-0.5 rounded-full font-label-md text-[10px] uppercase tracking-wider">Bed Allocation</span>
+<span class="font-data-mono text-data-mono text-on-surface-variant">Incoming Triage</span>
+</div>
+<div class="font-body-md text-body-md font-semibold text-primary">Assign Isolation Bed</div>
+<div class="font-body-md text-[12px] text-on-surface-variant">Patient suspected exposure, symptomatic. ETA 15m.</div>
+</div>
+<div class="flex gap-2 w-full md:w-auto mt-2 md:mt-0 pl-2 md:pl-0">
+<button class="w-full md:w-auto px-4 py-2 border border-outline-variant text-on-surface-variant font-label-md text-label-md rounded-md hover:bg-surface-container transition-colors text-center">Allocate Bed</button>
+</div>
+</div>
+</section>
+<!-- Unit Pulse Section -->
+<section class="col-span-1 md:col-span-4 flex flex-col gap-sm">
+<h2 class="font-headline-sm text-headline-sm text-primary mb-xs mt-md md:mt-0 flex items-center gap-2 border-b border-outline-variant pb-2">
+<span class="material-symbols-outlined text-[20px] text-secondary">trending_up</span> 
+                Unit Pulse (24h)
+            </h2>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-sm md:p-md flex flex-col gap-4">
+<!-- Trend 1 -->
+<div>
+<div class="flex justify-between items-end mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant">Admissions</span>
+<span class="font-data-mono text-data-mono text-primary font-semibold">+4</span>
+</div>
+<!-- Minimalist CSS Bar Chart representation -->
+<div class="flex items-end h-10 gap-1 w-full border-b border-surface-variant pb-1">
+<div class="w-full bg-surface-variant h-[20%] rounded-t-sm"></div>
+<div class="w-full bg-surface-variant h-[40%] rounded-t-sm"></div>
+<div class="w-full bg-surface-variant h-[30%] rounded-t-sm"></div>
+<div class="w-full bg-surface-variant h-[60%] rounded-t-sm"></div>
+<div class="w-full bg-surface-variant h-[50%] rounded-t-sm"></div>
+<div class="w-full bg-secondary h-[80%] rounded-t-sm"></div>
+<div class="w-full bg-secondary h-[100%] rounded-t-sm"></div>
+</div>
+</div>
+<!-- Trend 2 -->
+<div>
+<div class="flex justify-between items-end mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant">Discharges/Transfers</span>
+<span class="font-data-mono text-data-mono text-primary font-semibold">2</span>
+</div>
+<div class="flex items-end h-10 gap-1 w-full border-b border-surface-variant pb-1">
+<div class="w-full bg-surface-variant h-[10%] rounded-t-sm"></div>
+<div class="w-full bg-surface-variant h-[10%] rounded-t-sm"></div>
+<div class="w-full bg-surface-variant h-[30%] rounded-t-sm"></div>
+<div class="w-full bg-surface-variant h-[20%] rounded-t-sm"></div>
+<div class="w-full bg-surface-variant h-[10%] rounded-t-sm"></div>
+<div class="w-full bg-surface-variant h-[40%] rounded-t-sm"></div>
+<div class="w-full bg-outline h-[30%] rounded-t-sm"></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-base py-xs pb-safe bg-surface dark:bg-inverse-surface border-t border-outline-variant dark:border-outline md:hidden">
+<button class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed-dim font-bold active:scale-95 transition-transform duration-100 hover:bg-surface-container-low dark:hover:bg-surface-container-highest rounded-lg p-1 min-w-[64px]">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md mt-1">Dashboard</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant active:scale-95 transition-transform duration-100 hover:bg-surface-container-low dark:hover:bg-surface-container-highest rounded-lg p-1 min-w-[64px]">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-md text-label-md mt-1">Patients</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant active:scale-95 transition-transform duration-100 hover:bg-surface-container-low dark:hover:bg-surface-container-highest rounded-lg p-1 min-w-[64px]">
+<span class="material-symbols-outlined" data-icon="bed">bed</span>
+<span class="font-label-md text-label-md mt-1">Beds</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant active:scale-95 transition-transform duration-100 hover:bg-surface-container-low dark:hover:bg-surface-container-highest rounded-lg p-1 min-w-[64px] relative">
+<span class="absolute top-0 right-2 w-2 h-2 bg-error rounded-full border border-surface"></span>
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md mt-1">Recs</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant active:scale-95 transition-transform duration-100 hover:bg-surface-container-low dark:hover:bg-surface-container-highest rounded-lg p-1 min-w-[64px]">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-md text-label-md mt-1">Resources</span>
+</button>
+</nav>
+</body></html>
