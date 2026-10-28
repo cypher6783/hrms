@@ -41,7 +41,7 @@ public class RecommendationItem {
     @Column(columnDefinition = "TEXT")
     private String rationale;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 50)
     private String status = "PENDING";
 
     @Column(name = "created_at", nullable = false, updatable = false)

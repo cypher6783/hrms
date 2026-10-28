@@ -29,7 +29,7 @@ public class BedCleaningController {
         return ApiResponse.success(cleaningService.getTasksByBed(bedId));
     }
 
-    @GetMapping
+    @GetMapping({"", "/tasks"})
     public ApiResponse<PagedResponse<CleaningTaskResponse>> searchTasks(
             @RequestParam(required = false) UUID bedId,
             @RequestParam(required = false) String status,
@@ -41,7 +41,7 @@ public class BedCleaningController {
         return ApiResponse.success(cleaningService.searchTasks(request));
     }
 
-    @PostMapping("/{id}/assign")
+    @PostMapping({"/{id}/assign", "/tasks/{id}/assign"})
     public ApiResponse<CleaningTaskResponse> assignTask(
             @PathVariable UUID id,
             @Valid @RequestBody CleaningAssignmentRequest request) {
@@ -49,21 +49,22 @@ public class BedCleaningController {
         return ApiResponse.success(cleaningService.assignTask(id, request, userId));
     }
 
-    @PostMapping("/{id}/start")
+    @PostMapping({"/{id}/start", "/tasks/{id}/start"})
     public ApiResponse<CleaningTaskResponse> startCleaning(@PathVariable UUID id) {
         UUID userId = SecurityUtils.getCurrentUserId();
         return ApiResponse.success(cleaningService.startCleaning(id, userId));
     }
 
-    @PostMapping("/{id}/complete")
+    @PostMapping({"/{id}/complete", "/tasks/{id}/complete"})
     public ApiResponse<CleaningTaskResponse> completeCleaning(
             @PathVariable UUID id,
-            @RequestBody CleaningCompletionRequest request) {
+            @RequestBody(required = false) CleaningCompletionRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();
-        return ApiResponse.success(cleaningService.completeCleaning(id, request, userId));
+        CleaningCompletionRequest req = request != null ? request : new CleaningCompletionRequest("Decontamination completed as per Lassa protocol.");
+        return ApiResponse.success(cleaningService.completeCleaning(id, req, userId));
     }
 
-    @PostMapping("/{id}/verify")
+    @PostMapping({"/{id}/verify", "/tasks/{id}/verify"})
     public ApiResponse<CleaningTaskResponse> verifyCleaning(@PathVariable UUID id) {
         UUID userId = SecurityUtils.getCurrentUserId();
         return ApiResponse.success(cleaningService.verifyCleaning(id, userId));

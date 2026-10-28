@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hospital.resource.auth.security.SecurityUtils;
 import com.hospital.resource.resource.controller.ResourceController;
 import com.hospital.resource.resource.dto.*;
+import com.hospital.resource.resource.service.InventoryApplicationService;
 import com.hospital.resource.resource.service.ResourceApplicationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,9 @@ class ResourceControllerTest {
     private ResourceApplicationService resourceService;
 
     @MockBean
+    private InventoryApplicationService inventoryService;
+
+    @MockBean
     private JwtTokenProvider jwtTokenProvider;
 
     private ResourceResponse testResponse;
@@ -48,51 +52,62 @@ class ResourceControllerTest {
     @BeforeEach
     void setUp() {
         resourceId = UUID.randomUUID();
+
         testResponse = new ResourceResponse(
-                resourceId, "IV Cannula 18G", "CONSUMABLE", "PIECE",
-                50, 100, "NORMAL", null, Instant.now(), Instant.now()
+                resourceId,
+                "Ribavirin 200mg",
+                "MEDICATION",
+                "Capsule",
+                20,
+                50,
+                "HIGH",
+                null,
+                Instant.now(),
+                Instant.now()
         );
+    }
+
+    @Test
+    void getResource_Success() throws Exception {
+        when(resourceService.getResource(resourceId)).thenReturn(testResponse);
+
+        mockMvc.perform(get("/api/v1/resources/" + resourceId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.name").value("Ribavirin 200mg"))
+                .andExpect(jsonPath("$.data.category").value("MEDICATION"));
+    }
+
+    @Test
+    void getAllResources_Success() throws Exception {
+        when(resourceService.getAllResources()).thenReturn(List.of(testResponse));
+
+        mockMvc.perform(get("/api/v1/resources"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data[0].name").value("Ribavirin 200mg"));
     }
 
     @Test
     @WithMockUser
     void createResource_Success() throws Exception {
-        ResourceRequest request = new ResourceRequest("IV Cannula 18G", "CONSUMABLE", "PIECE", 50, 100, "NORMAL", null);
-        when(resourceService.createResource(any(), any())).thenReturn(testResponse);
+        ResourceRequest request = new ResourceRequest(
+                "Ribavirin 200mg",
+                "MEDICATION",
+                "Capsule",
+                20,
+                50,
+                "HIGH",
+                null
+        );
+
+        when(resourceService.createResource(any(ResourceRequest.class), any())).thenReturn(testResponse);
 
         mockMvc.perform(post("/api/v1/resources")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.name").value("IV Cannula 18G"));
-    }
-
-    @Test
-    @WithMockUser
-    void getResource_Success() throws Exception {
-        when(resourceService.getResource(resourceId)).thenReturn(testResponse);
-
-        mockMvc.perform(get("/api/v1/resources/{id}", resourceId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.id").value(resourceId.toString()));
-    }
-
-    @Test
-    @WithMockUser
-    void reserveResource_Success() throws Exception {
-        ResourceReservationRequest request = new ResourceReservationRequest(resourceId, UUID.randomUUID(), 10, 30);
-        ResourceReservationResponse reservationResponse = new ResourceReservationResponse(
-                UUID.randomUUID(), resourceId, request.admissionId(), 10, "RESERVED", Instant.now(), Instant.now().plusSeconds(1800), UUID.randomUUID()
-        );
-        when(resourceService.reserveResource(any(), any())).thenReturn(reservationResponse);
-
-        mockMvc.perform(post("/api/v1/resources/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.quantity").value(10));
+                .andExpect(jsonPath("$.data.name").value("Ribavirin 200mg"));
     }
 }

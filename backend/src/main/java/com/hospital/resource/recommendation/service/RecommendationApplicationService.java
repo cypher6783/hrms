@@ -5,6 +5,7 @@ import com.hospital.resource.admission.entity.Admission;
 import com.hospital.resource.admission.repository.AdmissionRepository;
 import com.hospital.resource.assessment.entity.ClinicalAssessment;
 import com.hospital.resource.assessment.repository.ClinicalAssessmentRepository;
+import com.hospital.resource.audit.service.AuditApplicationService;
 import com.hospital.resource.bed.entity.Bed;
 import com.hospital.resource.bed.repository.BedRepository;
 import com.hospital.resource.common.exception.ResourceNotFoundException;
@@ -20,6 +21,7 @@ import com.hospital.resource.recommendation.repository.*;
 import com.hospital.resource.ward.entity.Ward;
 import com.hospital.resource.ward.repository.WardRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +35,6 @@ import java.util.stream.Collectors;
 @Service
 public class RecommendationApplicationService {
 
-    
     private final AllocationRecommendationRepository recommendationRepository;
     private final RecommendationItemRepository itemRepository;
     private final RecommendationDecisionRepository decisionRepository;
@@ -45,6 +46,35 @@ public class RecommendationApplicationService {
     private final EquipmentRepository equipmentRepository;
     private final NotificationApplicationService notificationService;
     private final ObjectMapper objectMapper;
+    private final AuditApplicationService auditService;
+
+    @Autowired
+    public RecommendationApplicationService(
+            AllocationRecommendationRepository recommendationRepository,
+            RecommendationItemRepository itemRepository,
+            RecommendationDecisionRepository decisionRepository,
+            AdmissionRepository admissionRepository,
+            PatientRepository patientRepository,
+            ClinicalAssessmentRepository clinicalAssessmentRepository,
+            BedRepository bedRepository,
+            WardRepository wardRepository,
+            EquipmentRepository equipmentRepository,
+            NotificationApplicationService notificationService,
+            ObjectMapper objectMapper,
+            @Autowired(required = false) AuditApplicationService auditService) {
+        this.recommendationRepository = recommendationRepository;
+        this.itemRepository = itemRepository;
+        this.decisionRepository = decisionRepository;
+        this.admissionRepository = admissionRepository;
+        this.patientRepository = patientRepository;
+        this.clinicalAssessmentRepository = clinicalAssessmentRepository;
+        this.bedRepository = bedRepository;
+        this.wardRepository = wardRepository;
+        this.equipmentRepository = equipmentRepository;
+        this.notificationService = notificationService;
+        this.objectMapper = objectMapper;
+        this.auditService = auditService;
+    }
 
     public RecommendationApplicationService(
             AllocationRecommendationRepository recommendationRepository,
@@ -58,17 +88,10 @@ public class RecommendationApplicationService {
             EquipmentRepository equipmentRepository,
             NotificationApplicationService notificationService,
             ObjectMapper objectMapper) {
-        this.recommendationRepository = recommendationRepository;
-        this.itemRepository = itemRepository;
-        this.decisionRepository = decisionRepository;
-        this.admissionRepository = admissionRepository;
-        this.patientRepository = patientRepository;
-        this.clinicalAssessmentRepository = clinicalAssessmentRepository;
-        this.bedRepository = bedRepository;
-        this.wardRepository = wardRepository;
-        this.equipmentRepository = equipmentRepository;
-        this.notificationService = notificationService;
-        this.objectMapper = objectMapper;
+        this(recommendationRepository, itemRepository, decisionRepository,
+                admissionRepository, patientRepository, clinicalAssessmentRepository,
+                bedRepository, wardRepository, equipmentRepository,
+                notificationService, objectMapper, null);
     }
 
     private record BedScoredCandidate(
@@ -108,12 +131,12 @@ public class RecommendationApplicationService {
 
     @Transactional
     public RecommendationResponse generateRecommendation(UUID admissionId) {
+        // Expire any existing PENDING recommendation batches for this admission so current bed availability is evaluated
         List<AllocationRecommendation> existing = recommendationRepository.findByAdmissionId(admissionId);
-        if (!existing.isEmpty()) {
-            AllocationRecommendation rec = existing.get(0);
-            List<RecommendationItem> items = itemRepository.findByRecommendationId(rec.getId());
-            if (!items.isEmpty()) {
-                return toResponse(rec, items);
+        for (AllocationRecommendation prevRec : existing) {
+            if ("PENDING".equals(prevRec.getStatus())) {
+                prevRec.setStatus("EXPIRED");
+                recommendationRepository.save(prevRec);
             }
         }
 
@@ -158,17 +181,21 @@ public class RecommendationApplicationService {
         List<BedScoredCandidate> scoredBeds = new ArrayList<>();
 
         for (Bed bed : allBeds) {
-            // Hard Constraint 1: Bed must be AVAILABLE
+            // Hard Constraint 1: Bed exists and status must be AVAILABLE
             if (!"AVAILABLE".equalsIgnoreCase(bed.getStatus())) {
                 continue;
             }
-            // Hard Constraint 2: Ward must exist and be ACTIVE
+            // Hard Constraint 2: Bed must not currently be assigned to another admission
+            if (bed.getCurrentAdmissionId() != null) {
+                continue;
+            }
+            // Hard Constraint 3: Ward must exist and be ACTIVE
             if (bed.getWardId() == null || !wardMap.containsKey(bed.getWardId())) {
                 continue;
             }
             Ward ward = wardMap.get(bed.getWardId());
 
-            // Hard Constraint 3: Ward capacity must not be exhausted
+            // Hard Constraint 4: Ward capacity must not be exhausted
             long occupiedCount = bedRepository.countOccupiedByWardId(ward.getId());
             int maxCapacity = (ward.getMaxBedCapacity() != null && ward.getMaxBedCapacity() > 0)
                     ? ward.getMaxBedCapacity()
@@ -177,14 +204,14 @@ public class RecommendationApplicationService {
                 continue;
             }
 
-            // Hard Constraint 4: Isolation Match for Confirmed Lassa Fever
+            // Hard Constraint 5: Isolation Match for Confirmed Lassa Fever
             boolean isIsolation = Boolean.TRUE.equals(bed.getIsIsolationCapable());
             if ("CONFIRMED".equalsIgnoreCase(infectionStatus) && !isIsolation) {
                 // Eliminate non-isolation bed for confirmed Lassa fever patient
                 continue;
             }
 
-            // --- Multi-Factor Weighted Scoring ---
+            // --- Multi-Factor Weighted Scoring (Sum of 6 weights = 1.00) ---
             // Factor 1: Isolation Match (Weight: 0.30)
             double sIso;
             String expIso;
@@ -260,7 +287,7 @@ public class RecommendationApplicationService {
             double sEquipment = 0.90;
             String expEquipment = "Critical monitoring and infusion equipment available in ward";
 
-            // Calculate Composite Score
+            // Calculate Composite Score (0.30 + 0.25 + 0.20 + 0.10 + 0.10 + 0.05 = 1.00)
             double composite = (sIso * 0.30) + (sType * 0.25) + (sOccupancy * 0.20)
                     + (sCleaning * 0.10) + (sProximity * 0.10) + (sEquipment * 0.05);
             composite = Math.round(composite * 100.0) / 100.0;
@@ -272,14 +299,15 @@ public class RecommendationApplicationService {
             ));
         }
 
-        // Sort beds descending by composite score
+        // Sort eligible candidate beds descending by composite score
         scoredBeds.sort((a, b) -> Double.compare(b.compositeScore, a.compositeScore));
 
         // 4. Build AllocationRecommendation Batch
+        String batchStatus = scoredBeds.isEmpty() ? "NO_FEASIBLE_ALLOCATION" : "PENDING";
         AllocationRecommendation recommendation = AllocationRecommendation.builder()
                 .admissionId(admissionId)
                 .batchType("CRITICAL_LASSA_ALLOCATION")
-                .status("PENDING")
+                .status(batchStatus)
                 .generatedAt(Instant.now())
                 .expiresAt(Instant.now().plusSeconds(1800))
                 .build();
@@ -350,32 +378,16 @@ public class RecommendationApplicationService {
                 items.add(item);
             }
         } else {
-            // Fallback: No bed meets hard constraints
-            Bed fallbackBed = allBeds.isEmpty() ? null : allBeds.get(0);
-            UUID fallbackId = (fallbackBed != null) ? fallbackBed.getId() : UUID.randomUUID();
-            BigDecimal fallbackScore = BigDecimal.valueOf(0.20);
-            String fallbackRationale = "FALLBACK CAPACITY ALERT: No available beds meet the infection control isolation constraints for patient infection status: "
-                    + infectionStatus + ". All isolation beds are occupied or ward capacity is exhausted. Recommend immediate clinical override, bed transfer, or emergency ward expansion.";
-
-            RecommendationItem fallbackItem = RecommendationItem.builder()
-                    .recommendationId(recommendation.getId())
-                    .itemType("BED")
-                    .recommendedEntityType("BED")
-                    .recommendedEntityId(fallbackId)
-                    .rank(1)
-                    .confidenceScore(fallbackScore)
-                    .scoringBreakdown("{\"fallback\":true,\"reason\":\"CAPACITY_OR_ISOLATION_CONSTRAINTS_EXHAUSTED\"}")
-                    .rationale(fallbackRationale)
-                    .status("PENDING")
-                    .createdAt(Instant.now())
-                    .build();
-
-            items.add(fallbackItem);
+            // NO FEASIBLE BED ALLOCATION:
+            // Explicitly represent result as NO_FEASIBLE_ALLOCATION.
+            // Do NOT pick occupied/cleaning beds from allBeds.
+            // Do NOT generate random UUIDs.
+            log.warn("NO FEASIBLE BED ALLOCATION: No available bed satisfied mandatory isolation or capacity constraints for admission {}", admissionId);
 
             try {
                 notificationService.createNotification(
                         "CAPACITY ALERT: Lassa Isolation Bed Shortage",
-                        "Admission " + admission.getAdmissionNumber() + " could not find an available isolation bed matching constraints.",
+                        "Admission " + admission.getAdmissionNumber() + " could not find an available isolation bed matching constraints (Infection Status: " + infectionStatus + "). Immediate clinical review or emergency ward transfer required.",
                         "ALERT",
                         "RECOMMENDATION",
                         recommendation.getId(),
@@ -387,7 +399,7 @@ public class RecommendationApplicationService {
             }
         }
 
-        // 5. Equipment Allocation
+        // 5. Equipment Allocation (only if beds feasible or equipment needed)
         List<Equipment> availableEquipment = equipmentRepository.findByStatus("AVAILABLE");
         List<EquipmentScoredCandidate> scoredEquipment = new ArrayList<>();
 
@@ -434,7 +446,7 @@ public class RecommendationApplicationService {
             scoredEquipment.add(new EquipmentScoredCandidate(eq, eqScore, sMatch, 1.0, sLoc, eqRationale));
         }
 
-        if (!scoredEquipment.isEmpty()) {
+        if (!scoredEquipment.isEmpty() && !scoredBeds.isEmpty()) {
             scoredEquipment.sort((a, b) -> Double.compare(b.compositeScore, a.compositeScore));
             EquipmentScoredCandidate bestEq = scoredEquipment.get(0);
             BigDecimal eqConfidence = BigDecimal.valueOf(bestEq.compositeScore).setScale(2, RoundingMode.HALF_UP);
@@ -469,9 +481,12 @@ public class RecommendationApplicationService {
             items.add(eqItem);
         }
 
-        itemRepository.saveAll(items);
-        log.info("Generated allocation recommendation batch {} with {} items for admission {}",
-                recommendation.getId(), items.size(), admissionId);
+        if (!items.isEmpty()) {
+            itemRepository.saveAll(items);
+        }
+
+        log.info("Completed allocation recommendation batch {} with status {} and {} items for admission {}",
+                recommendation.getId(), recommendation.getStatus(), items.size(), admissionId);
         return toResponse(recommendation, items);
     }
 
@@ -491,73 +506,179 @@ public class RecommendationApplicationService {
 
     @Transactional
     public RecommendationDecisionResponse recordDecision(UUID itemId, RecommendationDecisionRequest request, UUID userId) {
+        // 1. Verify RecommendationItem exists and is PENDING
         RecommendationItem item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ResourceNotFoundException("RecommendationItem", itemId.toString()));
 
-        if (!"PENDING".equals(item.getStatus())) {
-            throw new ValidationException("Item is not in PENDING status");
+        if (!"PENDING".equalsIgnoreCase(item.getStatus())) {
+            throw new ValidationException("Item is not in PENDING status (current status: " + item.getStatus() + ")");
         }
 
-        if ("ACCEPT".equals(request.decisionType()) || "ACCEPTED".equals(request.decisionType())) {
+        // 2. Verify Recommendation batch exists
+        AllocationRecommendation recommendation = recommendationRepository.findById(item.getRecommendationId())
+                .orElseThrow(() -> new ResourceNotFoundException("Recommendation", item.getRecommendationId().toString()));
+
+        // 3. Verify Admission exists and is eligible for bed assignment
+        Admission admission = admissionRepository.findById(recommendation.getAdmissionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Admission", recommendation.getAdmissionId().toString()));
+
+        if ("DISCHARGED".equalsIgnoreCase(admission.getStatus())) {
+            throw new ValidationException("Cannot assign resources to a discharged admission (admissionId: " + admission.getId() + ")");
+        }
+
+        String decisionType = request.decisionType() != null ? request.decisionType().toUpperCase() : "ACCEPT";
+
+        if ("ACCEPT".equals(decisionType) || "ACCEPTED".equals(decisionType)) {
+            // Revalidation with Pessimistic Concurrency Control:
+            if ("BED".equalsIgnoreCase(item.getItemType())) {
+                UUID bedId = item.getRecommendedEntityId();
+                Bed bed = bedRepository.findByIdWithLock(bedId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Bed", bedId.toString()));
+
+                // Verify bed remains AVAILABLE
+                if (!"AVAILABLE".equalsIgnoreCase(bed.getStatus())) {
+                    throw new ValidationException("Bed " + bed.getBedNumber() + " is no longer available. Current status: " + bed.getStatus());
+                }
+
+                // Verify bed is not already assigned to another admission
+                if (bed.getCurrentAdmissionId() != null) {
+                    throw new ValidationException("Bed " + bed.getBedNumber() + " is already occupied by admission " + bed.getCurrentAdmissionId());
+                }
+
+                // Verify Ward is active
+                if (bed.getWardId() != null) {
+                    Ward ward = wardRepository.findById(bed.getWardId()).orElse(null);
+                    if (ward != null && !"ACTIVE".equalsIgnoreCase(ward.getStatus())) {
+                        throw new ValidationException("Ward " + ward.getName() + " is not active");
+                    }
+                }
+
+                // Atomic allocation
+                admission.setBedId(bed.getId());
+                admission.setUpdatedBy(userId);
+                admissionRepository.save(admission);
+
+                bed.setStatus("OCCUPIED");
+                bed.setCurrentAdmissionId(admission.getId());
+                bed.setUpdatedBy(userId);
+                bedRepository.save(bed);
+
+                log.info("Pessimistically locked and allocated Bed {} ({}) to Admission {}",
+                        bed.getBedNumber(), bed.getId(), admission.getId());
+
+                if (auditService != null) {
+                    auditService.recordAudit(
+                            userId,
+                            "RECOMMENDATION_ACCEPT",
+                            "BED",
+                            bed.getId(),
+                            "AVAILABLE",
+                            "OCCUPIED",
+                            "127.0.0.1",
+                            "Accepted recommendation for Bed " + bed.getBedNumber()
+                    );
+                }
+            } else if ("EQUIPMENT".equalsIgnoreCase(item.getItemType())) {
+                UUID eqId = item.getRecommendedEntityId();
+                Equipment eq = equipmentRepository.findByIdWithLock(eqId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Equipment", eqId.toString()));
+
+                if (!"AVAILABLE".equalsIgnoreCase(eq.getStatus())) {
+                    throw new ValidationException("Equipment " + eq.getName() + " is no longer available. Current status: " + eq.getStatus());
+                }
+
+                eq.setStatus("IN_USE");
+                eq.setAssignedAdmissionId(admission.getId());
+                eq.setUpdatedBy(userId);
+                equipmentRepository.save(eq);
+
+                log.info("Allocated Equipment {} ({}) to Admission {}", eq.getName(), eq.getId(), admission.getId());
+
+                if (auditService != null) {
+                    auditService.recordAudit(
+                            userId,
+                            "RECOMMENDATION_ACCEPT",
+                            "EQUIPMENT",
+                            eq.getId(),
+                            "AVAILABLE",
+                            "IN_USE",
+                            "127.0.0.1",
+                            "Accepted recommendation for Equipment " + eq.getName()
+                    );
+                }
+            }
+
             item.setStatus("ACCEPTED");
 
-            // Execute real allocation in database
-            if ("BED".equalsIgnoreCase(item.getItemType())) {
-                recommendationRepository.findById(item.getRecommendationId()).ifPresent(rec -> {
-                    admissionRepository.findById(rec.getAdmissionId()).ifPresent(adm -> {
-                        adm.setBedId(item.getRecommendedEntityId());
-                        adm.setUpdatedBy(userId);
-                        admissionRepository.save(adm);
-
-                        bedRepository.findById(item.getRecommendedEntityId()).ifPresent(bed -> {
-                            bed.setStatus("OCCUPIED");
-                            bed.setCurrentAdmissionId(adm.getId());
-                            bed.setUpdatedBy(userId);
-                            bedRepository.save(bed);
-                            log.info("Allocated Bed {} to Admission {}", bed.getBedNumber(), adm.getId());
-                        });
-                    });
-                });
-            } else if ("EQUIPMENT".equalsIgnoreCase(item.getItemType())) {
-                recommendationRepository.findById(item.getRecommendationId()).ifPresent(rec -> {
-                    equipmentRepository.findById(item.getRecommendedEntityId()).ifPresent(eq -> {
-                        eq.setStatus("IN_USE");
-                        eq.setAssignedAdmissionId(rec.getAdmissionId());
-                        eq.setUpdatedBy(userId);
-                        equipmentRepository.save(eq);
-                        log.info("Allocated Equipment {} to Admission {}", eq.getName(), rec.getAdmissionId());
-                    });
-                });
-            }
-        } else if ("REJECT".equals(request.decisionType()) || "REJECTED".equals(request.decisionType())) {
+        } else if ("REJECT".equals(decisionType) || "REJECTED".equals(decisionType)) {
             item.setStatus("REJECTED");
-        } else {
-            item.setStatus("OVERRIDDEN");
 
-            // If overridden with an alternate entity ID:
-            if ("BED".equalsIgnoreCase(item.getItemType()) && request.overriddenEntityId() != null) {
-                recommendationRepository.findById(item.getRecommendationId()).ifPresent(rec -> {
-                    admissionRepository.findById(rec.getAdmissionId()).ifPresent(adm -> {
-                        adm.setBedId(request.overriddenEntityId());
-                        adm.setUpdatedBy(userId);
-                        admissionRepository.save(adm);
-
-                        bedRepository.findById(request.overriddenEntityId()).ifPresent(bed -> {
-                            bed.setStatus("OCCUPIED");
-                            bed.setCurrentAdmissionId(adm.getId());
-                            bed.setUpdatedBy(userId);
-                            bedRepository.save(bed);
-                            log.info("Overrode Bed to {} for Admission {}", bed.getBedNumber(), adm.getId());
-                        });
-                    });
-                });
+            if (auditService != null) {
+                auditService.recordAudit(
+                        userId,
+                        "RECOMMENDATION_REJECT",
+                        item.getItemType(),
+                        item.getRecommendedEntityId(),
+                        item.getStatus(),
+                        "REJECTED",
+                        "127.0.0.1",
+                        request.overrideJustification() != null ? request.overrideJustification() : "Clinician rejected recommendation"
+                );
             }
+
+        } else {
+            // OVERRIDE: Mandate clinical justification
+            if (request.overrideJustification() == null || request.overrideJustification().trim().isEmpty()) {
+                throw new ValidationException("Clinical justification is mandatory for recommendation overrides.");
+            }
+
+            if ("BED".equalsIgnoreCase(item.getItemType()) && request.overriddenEntityId() != null) {
+                UUID overriddenBedId = request.overriddenEntityId();
+                Bed overriddenBed = bedRepository.findByIdWithLock(overriddenBedId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Bed", overriddenBedId.toString()));
+
+                admission.setBedId(overriddenBed.getId());
+                admission.setUpdatedBy(userId);
+                admissionRepository.save(admission);
+
+                overriddenBed.setStatus("OCCUPIED");
+                overriddenBed.setCurrentAdmissionId(admission.getId());
+                overriddenBed.setUpdatedBy(userId);
+                bedRepository.save(overriddenBed);
+
+                log.info("Clinician manual override: Bed {} assigned to Admission {}. Justification: {}",
+                        overriddenBed.getBedNumber(), admission.getId(), request.overrideJustification());
+
+                if (auditService != null) {
+                    auditService.recordAudit(
+                            userId,
+                            "RECOMMENDATION_OVERRIDE",
+                            "BED",
+                            overriddenBed.getId(),
+                            "AVAILABLE",
+                            "OCCUPIED",
+                            "127.0.0.1",
+                            request.overrideJustification()
+                    );
+                }
+            }
+
+            item.setStatus("OVERRIDDEN");
         }
+
         itemRepository.save(item);
+
+        // Update recommendation batch status
+        List<RecommendationItem> allItems = itemRepository.findByRecommendationId(recommendation.getId());
+        boolean hasPending = allItems.stream().anyMatch(i -> "PENDING".equals(i.getStatus()));
+        if (!hasPending) {
+            recommendation.setStatus("DECIDED");
+            recommendationRepository.save(recommendation);
+        }
 
         RecommendationDecision decision = RecommendationDecision.builder()
                 .recommendationItemId(itemId)
-                .decisionType(request.decisionType())
+                .decisionType(decisionType)
                 .overriddenEntityType(request.overriddenEntityId() != null ? item.getRecommendedEntityType() : null)
                 .overriddenEntityId(request.overriddenEntityId())
                 .overrideJustification(request.overrideJustification())
@@ -566,9 +687,15 @@ public class RecommendationApplicationService {
                 .build();
 
         decision = decisionRepository.save(decision);
-        log.info("Recommendation decision: itemId={}, decisionType={}", itemId, request.decisionType());
-        return new RecommendationDecisionResponse(decision.getId(), decision.getRecommendationItemId(),
-                decision.getDecisionType(), decision.getDecidedBy(), decision.getDecidedAt());
+        log.info("Recorded decision: itemId={}, decisionType={}, decidedBy={}", itemId, decisionType, userId);
+
+        return new RecommendationDecisionResponse(
+                decision.getId(),
+                decision.getRecommendationItemId(),
+                decision.getDecisionType(),
+                decision.getDecidedBy(),
+                decision.getDecidedAt()
+        );
     }
 
     @Transactional

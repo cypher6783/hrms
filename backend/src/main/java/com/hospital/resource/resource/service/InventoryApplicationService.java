@@ -5,6 +5,7 @@ import com.hospital.resource.common.event.inventory.InventoryExpiredEvent;
 import com.hospital.resource.common.event.inventory.InventoryLowStockEvent;
 import com.hospital.resource.common.event.inventory.InventoryUpdatedEvent;
 import com.hospital.resource.common.exception.ResourceNotFoundException;
+import com.hospital.resource.common.exception.ValidationException;
 import com.hospital.resource.resource.domain.InventoryDomainService;
 import com.hospital.resource.resource.dto.*;
 import com.hospital.resource.resource.entity.InventoryTransaction;
@@ -111,6 +112,42 @@ public class InventoryApplicationService {
         }
 
         return inventoryMapper.toTransactionResponse(transaction);
+    }
+
+    @Transactional
+    public InventoryTransactionResponse restockResource(UUID resourceId, int quantity, String notes, UUID performedBy) {
+        if (quantity <= 0) {
+            throw new ValidationException("Restock quantity must be greater than zero");
+        }
+
+        Resource resource = resourceRepository.findById(resourceId)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource", resourceId.toString()));
+
+        List<ResourceInventory> inventories = inventoryRepository.findByResourceId(resourceId);
+        ResourceInventory targetInventory;
+        if (inventories.isEmpty()) {
+            targetInventory = ResourceInventory.builder()
+                    .resourceId(resourceId)
+                    .location("Main Pharmacy / Central Store")
+                    .currentStock(0)
+                    .batchNumber("BATCH-" + System.currentTimeMillis())
+                    .expirationDate(LocalDate.now().plusMonths(12))
+                    .build();
+            targetInventory = inventoryRepository.save(targetInventory);
+        } else {
+            targetInventory = inventories.get(0);
+        }
+
+        InventoryTransactionRequest request = new InventoryTransactionRequest(
+                targetInventory.getId(),
+                "IN",
+                quantity,
+                null,
+                "RESTOCK",
+                notes != null ? notes : "Restocked via resource inventory management"
+        );
+
+        return recordTransaction(request, performedBy);
     }
 
     @Transactional(readOnly = true)

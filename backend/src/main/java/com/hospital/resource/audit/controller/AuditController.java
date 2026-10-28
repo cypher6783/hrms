@@ -5,19 +5,27 @@ import com.hospital.resource.audit.service.AuditApplicationService;
 import com.hospital.resource.common.dto.ApiResponse;
 import com.hospital.resource.common.dto.PagedResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-import org.springframework.security.access.prepost.PreAuthorize;
-
 @RestController
 @RequestMapping("/api/v1/audit")
-@PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ADMIN')")
+@PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ADMIN', 'WARD_MANAGER', 'MEDICAL_DOCTOR', 'DOCTOR')")
 @RequiredArgsConstructor
 public class AuditController {
 
     private final AuditApplicationService auditService;
+
+    @GetMapping
+    public ApiResponse<PagedResponse<AuditLogResponse>> getAllAuditLogs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            @RequestParam(required = false) String actionType,
+            @RequestParam(required = false) String entityType) {
+        return ApiResponse.success(auditService.getAllAuditLogs(page, size, actionType, entityType));
+    }
 
     @GetMapping("/entity/{entityType}/{entityId}")
     public ApiResponse<PagedResponse<AuditLogResponse>> getAuditLogsByEntity(

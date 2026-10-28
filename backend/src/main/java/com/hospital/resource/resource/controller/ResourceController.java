@@ -3,20 +3,34 @@ package com.hospital.resource.resource.controller;
 import com.hospital.resource.auth.security.SecurityUtils;
 import com.hospital.resource.common.dto.ApiResponse;
 import com.hospital.resource.resource.dto.*;
+import com.hospital.resource.resource.service.InventoryApplicationService;
 import com.hospital.resource.resource.service.ResourceApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/resources")
-@RequiredArgsConstructor
 public class ResourceController {
 
     private final ResourceApplicationService resourceService;
+    private final InventoryApplicationService inventoryService;
+
+    @Autowired
+    public ResourceController(ResourceApplicationService resourceService,
+                              @Autowired(required = false) InventoryApplicationService inventoryService) {
+        this.resourceService = resourceService;
+        this.inventoryService = inventoryService;
+    }
+
+    public ResourceController(ResourceApplicationService resourceService) {
+        this(resourceService, null);
+    }
 
     @PostMapping
     public ApiResponse<ResourceResponse> createResource(@Valid @RequestBody ResourceRequest request) {
@@ -43,6 +57,23 @@ public class ResourceController {
     public ApiResponse<ResourceResponse> updateResource(@PathVariable UUID id, @Valid @RequestBody ResourceRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();
         return ApiResponse.success(resourceService.updateResource(id, request, userId));
+    }
+
+    @PostMapping("/{id}/inventory/add")
+    public ApiResponse<InventoryTransactionResponse> restockResource(
+            @PathVariable UUID id,
+            @RequestBody Map<String, Object> body) {
+        UUID userId = SecurityUtils.getCurrentUserId();
+        int qty = 1;
+        if (body.get("quantity") != null) {
+            if (body.get("quantity") instanceof Number num) {
+                qty = num.intValue();
+            } else {
+                qty = Integer.parseInt(body.get("quantity").toString());
+            }
+        }
+        String notes = (String) body.getOrDefault("notes", "Restocked via resource inventory management");
+        return ApiResponse.success(inventoryService.restockResource(id, qty, notes, userId));
     }
 
     @PostMapping("/reservations")

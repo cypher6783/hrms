@@ -21,7 +21,7 @@ public class AllocationRecommendation {
     @Column(name = "batch_type", nullable = false, length = 30)
     private String batchType;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 50)
     private String status = "PENDING";
 
     @Column(name = "generated_at", nullable = false)

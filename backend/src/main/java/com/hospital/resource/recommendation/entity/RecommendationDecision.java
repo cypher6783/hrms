@@ -18,7 +18,7 @@ public class RecommendationDecision {
     @Column(name = "recommendation_item_id", nullable = false)
     private UUID recommendationItemId;
 
-    @Column(name = "decision_type", nullable = false, length = 20)
+    @Column(name = "decision_type", nullable = false, length = 50)
     private String decisionType;
 
     @Column(name = "overridden_entity_type", length = 50)
