@@ -44,14 +44,14 @@ apiClient.interceptors.response.use(
   async (error: AxiosError<ErrorResponse>) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+    if ((error.response?.status === 401 || (error.response?.status === 403 && localStorage.getItem('access_token'))) && originalRequest && !originalRequest._retry) {
       const refreshToken = localStorage.getItem('refresh_token');
 
       if (!refreshToken) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+        if (window.location.pathname !== '/login') window.location.href = '/login';
         return Promise.reject(error);
       }
 
@@ -97,7 +97,7 @@ apiClient.interceptors.response.use(
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+        if (window.location.pathname !== '/login') window.location.href = '/login';
         return Promise.reject(refreshErr);
       } finally {
         isRefreshing = false;

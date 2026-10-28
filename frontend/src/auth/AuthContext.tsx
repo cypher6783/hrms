@@ -23,8 +23,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (storedUser && token) {
       try {
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const payload = JSON.parse(atob(parts[1]));
+          if (payload.exp && payload.exp * 1000 < Date.now()) {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('user');
+            setUser(null);
+            setIsLoading(false);
+            return;
+          }
+        }
         setUser(JSON.parse(storedUser));
       } catch (e) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
       }
     }

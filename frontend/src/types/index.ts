@@ -47,7 +47,8 @@ export interface LoginResponse extends User {
 export interface Patient {
   id: string;
   patientNumber: string;
-  firstName: string;
+  fullName?: string;
+  firstName?: string;
   lastName: string;
   gender: 'MALE' | 'FEMALE' | 'OTHER';
   dateOfBirth: string;
