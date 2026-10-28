@@ -2,6 +2,7 @@ package com.hospital.resource.admission.mapper;
 
 import com.hospital.resource.admission.dto.AdmissionRequest;
 import com.hospital.resource.admission.dto.AdmissionResponse;
+import com.hospital.resource.admission.dto.AdmissionSummaryResponse;
 import com.hospital.resource.admission.entity.Admission;
 import org.springframework.stereotype.Component;
 
@@ -43,9 +44,31 @@ public class AdmissionMapperImpl implements AdmissionMapper {
     }
 
     @Override
+    public AdmissionSummaryResponse toSummary(Admission admission) {
+        if (admission == null) return null;
+        return new AdmissionSummaryResponse(
+                admission.getId(),
+                admission.getAdmissionNumber(),
+                admission.getPatientId(),
+                admission.getWardId(),
+                admission.getBedId(),
+                admission.getStatus(),
+                admission.getAdmittedAt(),
+                admission.getDischargedAt(),
+                admission.getIsActive()
+        );
+    }
+
+    @Override
     public List<AdmissionResponse> toResponseList(List<Admission> admissions) {
         if (admissions == null) return List.of();
         return admissions.stream().map(this::toResponse).toList();
+    }
+
+    @Override
+    public List<AdmissionSummaryResponse> toSummaryList(List<Admission> admissions) {
+        if (admissions == null) return List.of();
+        return admissions.stream().map(this::toSummary).toList();
     }
 
     @Override

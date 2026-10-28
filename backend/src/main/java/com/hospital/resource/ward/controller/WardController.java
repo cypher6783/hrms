@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @RestController
 @RequestMapping("/api/v1/wards")
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class WardController {
     private final WardApplicationService wardService;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ADMIN')")
     public ApiResponse<WardResponse> createWard(@Valid @RequestBody WardRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();
         return ApiResponse.success(wardService.createWard(request, userId));
@@ -51,12 +54,14 @@ public class WardController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ADMIN')")
     public ApiResponse<WardResponse> updateWard(@PathVariable UUID id, @Valid @RequestBody WardRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();
         return ApiResponse.success(wardService.updateWard(id, request, userId));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ADMIN')")
     public ApiResponse<Void> deactivateWard(@PathVariable UUID id) {
         UUID userId = SecurityUtils.getCurrentUserId();
         wardService.deactivateWard(id, userId);

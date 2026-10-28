@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @RestController
 @RequestMapping("/api/v1/recommendations")
 @RequiredArgsConstructor
@@ -28,11 +30,18 @@ public class RecommendationController {
         return ApiResponse.success(recommendationService.getRecommendationsByAdmission(admissionId));
     }
 
+    @PostMapping("/admission/{admissionId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ADMIN', 'WARD_MANAGER', 'MEDICAL_DOCTOR', 'DOCTOR', 'NURSING_OFFICER', 'NURSE')")
+    public ApiResponse<RecommendationResponse> generateRecommendation(@PathVariable UUID admissionId) {
+        return ApiResponse.success(recommendationService.generateRecommendation(admissionId));
+    }
+
     @PostMapping("/items/{itemId}/decide")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ADMIN', 'WARD_MANAGER', 'MEDICAL_DOCTOR', 'DOCTOR')")
     public ApiResponse<RecommendationDecisionResponse> makeDecision(
             @PathVariable UUID itemId,
             @Valid @RequestBody RecommendationDecisionRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();
-        return ApiResponse.success(recommendationService.makeDecision(itemId, request, userId));
+        return ApiResponse.success(recommendationService.recordDecision(itemId, request, userId));
     }
 }

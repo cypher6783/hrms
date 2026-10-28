@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @RestController
 @RequestMapping("/api/v1/patients")
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ public class PatientController {
     private final PatientApplicationService patientService;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ADMIN', 'WARD_MANAGER', 'NURSING_OFFICER', 'NURSE', 'MEDICAL_DOCTOR', 'DOCTOR')")
     public ApiResponse<PatientResponse> createPatient(@Valid @RequestBody PatientRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();
         return ApiResponse.success(patientService.createPatient(request, userId));
@@ -44,12 +47,14 @@ public class PatientController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ADMIN', 'WARD_MANAGER', 'NURSING_OFFICER', 'NURSE', 'MEDICAL_DOCTOR', 'DOCTOR')")
     public ApiResponse<PatientResponse> updatePatient(@PathVariable UUID id, @Valid @RequestBody PatientRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();
         return ApiResponse.success(patientService.updatePatient(id, request, userId));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ADMIN')")
     public ApiResponse<Void> deactivatePatient(@PathVariable UUID id) {
         UUID userId = SecurityUtils.getCurrentUserId();
         patientService.deactivatePatient(id, userId);

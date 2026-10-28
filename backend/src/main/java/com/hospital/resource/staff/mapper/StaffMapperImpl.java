@@ -19,7 +19,7 @@ public class StaffMapperImpl implements StaffMapper {
                 .role(request.role())
                 .specialization(request.specialization())
                 .certificationStatus(request.certificationStatus())
-                .shiftPreference(request.shiftPreference())
+                .certificationExpiry(request.certificationExpiry())
                 .wardId(request.wardId())
                 .maxWorkloadThreshold(request.maxWorkloadThreshold())
                 .availabilityStatus(request.availabilityStatus() != null ? request.availabilityStatus() : "ACTIVE")
@@ -36,7 +36,7 @@ public class StaffMapperImpl implements StaffMapper {
                 staff.getRole(),
                 staff.getSpecialization(),
                 staff.getCertificationStatus(),
-                staff.getShiftPreference(),
+                staff.getCertificationExpiry(),
                 staff.getWardId(),
                 staff.getMaxWorkloadThreshold(),
                 staff.getAvailabilityStatus(),
@@ -54,7 +54,9 @@ public class StaffMapperImpl implements StaffMapper {
                 staff.getFullName(),
                 staff.getRole(),
                 staff.getSpecialization(),
-                staff.getAvailabilityStatus()
+                staff.getWardId(),
+                staff.getAvailabilityStatus(),
+                staff.getCreatedAt()
         );
     }
 
@@ -77,7 +79,7 @@ public class StaffMapperImpl implements StaffMapper {
         if (request.role() != null) staff.setRole(request.role());
         if (request.specialization() != null) staff.setSpecialization(request.specialization());
         if (request.certificationStatus() != null) staff.setCertificationStatus(request.certificationStatus());
-        if (request.shiftPreference() != null) staff.setShiftPreference(request.shiftPreference());
+        if (request.certificationExpiry() != null) staff.setCertificationExpiry(request.certificationExpiry());
         if (request.wardId() != null) staff.setWardId(request.wardId());
         if (request.maxWorkloadThreshold() != null) staff.setMaxWorkloadThreshold(request.maxWorkloadThreshold());
         if (request.availabilityStatus() != null) staff.setAvailabilityStatus(request.availabilityStatus());

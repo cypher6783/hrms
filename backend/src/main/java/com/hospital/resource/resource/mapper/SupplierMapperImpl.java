@@ -29,9 +29,10 @@ public class SupplierMapperImpl implements SupplierMapper {
                 supplier.getId(),
                 supplier.getName(),
                 supplier.getContactPerson(),
-                supplier.getEmail(),
                 supplier.getPhoneNumber(),
+                supplier.getEmail(),
                 supplier.getAddress(),
+                supplier.getLeadTimeDays(),
                 supplier.getIsActive(),
                 supplier.getCreatedAt(),
                 supplier.getUpdatedAt()

@@ -21,7 +21,7 @@ public class ResourceMapperImpl implements ResourceMapper {
                 .minimumThreshold(request.minimumThreshold())
                 .reorderPoint(request.reorderPoint())
                 .criticalityLevel(request.criticalityLevel() != null ? request.criticalityLevel() : "NORMAL")
-                .specificationDetails(request.specificationDetails())
+                .defaultSupplierId(request.defaultSupplierId())
                 .build();
     }
 
@@ -36,7 +36,7 @@ public class ResourceMapperImpl implements ResourceMapper {
                 resource.getMinimumThreshold(),
                 resource.getReorderPoint(),
                 resource.getCriticalityLevel(),
-                resource.getSpecificationDetails(),
+                resource.getDefaultSupplierId(),
                 resource.getCreatedAt(),
                 resource.getUpdatedAt()
         );
@@ -57,7 +57,7 @@ public class ResourceMapperImpl implements ResourceMapper {
         if (request.minimumThreshold() != null) resource.setMinimumThreshold(request.minimumThreshold());
         if (request.reorderPoint() != null) resource.setReorderPoint(request.reorderPoint());
         if (request.criticalityLevel() != null) resource.setCriticalityLevel(request.criticalityLevel());
-        if (request.specificationDetails() != null) resource.setSpecificationDetails(request.specificationDetails());
+        if (request.defaultSupplierId() != null) resource.setDefaultSupplierId(request.defaultSupplierId());
     }
 
     @Override

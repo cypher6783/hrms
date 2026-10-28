@@ -19,7 +19,7 @@ public class BedMapperImpl implements BedMapper {
                 .bedNumber(request.bedNumber())
                 .wardId(request.wardId())
                 .bedType(request.bedType())
-                .isIsolation(request.isIsolationCapable() != null ? request.isIsolationCapable() : false)
+                .isIsolationCapable(request.isIsolationCapable() != null ? request.isIsolationCapable() : false)
                 .build();
     }
 
@@ -31,7 +31,7 @@ public class BedMapperImpl implements BedMapper {
                 bed.getBedNumber(),
                 bed.getWardId(),
                 bed.getBedType(),
-                bed.getIsIsolation(),
+                bed.getIsIsolationCapable(),
                 bed.getStatus(),
                 bed.getCurrentAdmissionId(),
                 bed.getLastMaintenanceAt(),
@@ -57,6 +57,6 @@ public class BedMapperImpl implements BedMapper {
         if (request == null || bed == null) return;
         if (request.bedNumber() != null) bed.setBedNumber(request.bedNumber());
         if (request.bedType() != null) bed.setBedType(request.bedType());
-        if (request.isIsolationCapable() != null) bed.setIsIsolation(request.isIsolationCapable());
+        if (request.isIsolationCapable() != null) bed.setIsIsolationCapable(request.isIsolationCapable());
     }
 }

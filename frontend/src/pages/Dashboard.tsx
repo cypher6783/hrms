@@ -10,13 +10,12 @@ import {
   AlertTriangle,
   Sparkles,
   CheckCircle2,
-  Clock,
   ArrowRight,
   ShieldCheck,
   PackageCheck
 } from 'lucide-react';
 import { apiClient } from '../api/client';
-import type { AdmissionStats, WardStatus, Admission } from '../types';
+import type { AdmissionStats, WardStatus, Admission, Bed } from '../types';
 import { useNavigate } from 'react-router-dom';
 
 export const Dashboard: React.FC = () => {
@@ -29,74 +28,73 @@ export const Dashboard: React.FC = () => {
   const fetchDashboardData = async () => {
     try {
       setIsRefreshing(true);
-      const [statsRes, wardsRes, admissionsRes] = await Promise.allSettled([
+      const [statsRes, wardsRes, bedsRes, admissionsRes] = await Promise.allSettled([
         apiClient.get('/admissions/stats'),
         apiClient.get('/wards'),
-        apiClient.get('/admissions?status=PENDING_ALLOCATION&size=5'),
+        apiClient.get('/beds/filter'),
+        apiClient.get('/admissions'),
       ]);
 
-      if (statsRes.status === 'fulfilled' && statsRes.value.data.success) {
-        setStats(statsRes.value.data.data);
-      } else {
-        setStats({
-          totalAdmissions: 42,
-          pendingAllocations: 3,
-          activeAdmissions: 28,
-          todayDischarges: 4,
-          icuOccupancyRate: 85.0,
-          isolationOccupancyRate: 72.5,
-        });
+      let bedsList: Bed[] = [];
+      if (bedsRes.status === 'fulfilled' && bedsRes.value.data.success && Array.isArray(bedsRes.value.data.data)) {
+        bedsList = bedsRes.value.data.data;
       }
 
+      // 1. Calculate Real Dynamic Wards Occupancy from Bed Matrix
       if (wardsRes.status === 'fulfilled' && wardsRes.value.data.success) {
-        const wardList = Array.isArray(wardsRes.value.data.data) ? wardsRes.value.data.data : [];
-        setWards(
-          wardList.map((w: any) => ({
+        const rawWards = Array.isArray(wardsRes.value.data.data) ? wardsRes.value.data.data : [];
+        
+        const calculatedWards: WardStatus[] = rawWards.map((w: any) => {
+          const wardBeds = bedsList.filter((b) => b.wardId === w.id);
+          const totalBeds = wardBeds.length > 0 ? wardBeds.length : (w.maxBedCapacity || 10);
+          const occupiedBeds = wardBeds.filter((b) => b.status === 'OCCUPIED').length;
+          const availableBeds = wardBeds.filter((b) => b.status === 'AVAILABLE').length;
+          const cleaningBeds = wardBeds.filter(
+            (b) => b.status === 'CLEANING_REQUIRED' || b.status === 'UNDER_CLEANING' || (b.status as string) === 'DIRTY'
+          ).length;
+          const maintenanceBeds = wardBeds.filter((b) => b.status === 'MAINTENANCE').length;
+          const occupancyPercentage = totalBeds > 0 ? Math.round((occupiedBeds / totalBeds) * 100) : 0;
+
+          return {
             wardId: w.id,
             wardName: w.name,
-            totalBeds: w.maxBedCapacity || 10,
-            occupiedBeds: Math.floor((w.maxBedCapacity || 10) * 0.7),
-            availableBeds: Math.ceil((w.maxBedCapacity || 10) * 0.3),
-            cleaningBeds: 1,
-            maintenanceBeds: 0,
-            occupancyPercentage: 70,
-          }))
-        );
-      } else {
-        setWards([
-          { wardId: '1', wardName: 'Lassa Isolation Ward A', totalBeds: 12, occupiedBeds: 9, availableBeds: 2, cleaningBeds: 1, maintenanceBeds: 0, occupancyPercentage: 75 },
-          { wardId: '2', wardName: 'Lassa Isolation Ward B (ICU)', totalBeds: 8, occupiedBeds: 7, availableBeds: 1, cleaningBeds: 0, maintenanceBeds: 0, occupancyPercentage: 87.5 },
-          { wardId: '3', wardName: 'High Dependency Unit (HDU)', totalBeds: 10, occupiedBeds: 6, availableBeds: 3, cleaningBeds: 1, maintenanceBeds: 0, occupancyPercentage: 60 },
-          { wardId: '4', wardName: 'General Medical Ward', totalBeds: 20, occupiedBeds: 14, availableBeds: 5, cleaningBeds: 1, maintenanceBeds: 0, occupancyPercentage: 70 },
-        ]);
+            totalBeds,
+            occupiedBeds,
+            availableBeds,
+            cleaningBeds,
+            maintenanceBeds,
+            occupancyPercentage,
+          };
+        });
+
+        setWards(calculatedWards);
+
+        // Calculate Overall ICU and Isolation Occupancy Percentages dynamically
+        const icuBeds = bedsList.filter((b) => b.bedType === 'ICU');
+        const icuOccupied = icuBeds.filter((b) => b.status === 'OCCUPIED').length;
+        const realIcuRate = icuBeds.length > 0 ? Math.round((icuOccupied / icuBeds.length) * 100) : 0;
+
+        const isoBeds = bedsList.filter((b) => b.isIsolationCapable);
+        const isoOccupied = isoBeds.filter((b) => b.status === 'OCCUPIED').length;
+        const realIsoRate = isoBeds.length > 0 ? Math.round((isoOccupied / isoBeds.length) * 100) : 0;
+
+        if (statsRes.status === 'fulfilled' && statsRes.value.data.success) {
+          const apiStats = statsRes.value.data.data;
+          setStats({
+            totalAdmissions: (apiStats.activeAdmissions || 0) + (apiStats.dischargedToday || 0),
+            pendingAllocations: apiStats.activeAdmissions || 0,
+            activeAdmissions: apiStats.activeAdmissions || 0,
+            todayDischarges: apiStats.dischargedToday || 0,
+            icuOccupancyRate: realIcuRate,
+            isolationOccupancyRate: realIsoRate,
+          });
+        }
       }
 
+      // 2. Load Real Active Admissions
       if (admissionsRes.status === 'fulfilled' && admissionsRes.value.data.success) {
-        const content = admissionsRes.value.data.data?.content || [];
+        const content = admissionsRes.value.data.data?.content || Array.isArray(admissionsRes.value.data.data) ? admissionsRes.value.data.data : [];
         setPendingAdmissions(content);
-      } else {
-        setPendingAdmissions([
-          {
-            id: 'adm-101',
-            admissionNumber: 'ADM-2026-089',
-            patientId: 'pat-001',
-            patientName: 'Terna Akura',
-            status: 'PENDING_ALLOCATION',
-            priority: 'CRITICAL',
-            createdAt: new Date(Date.now() - 25 * 60000).toISOString(),
-            admittingDiagnosis: 'Lassa Fever (Confirmed - Severe Hemorrhagic)',
-          },
-          {
-            id: 'adm-102',
-            admissionNumber: 'ADM-2026-090',
-            patientId: 'pat-002',
-            patientName: 'Dooshima Orban',
-            status: 'PENDING_ALLOCATION',
-            priority: 'HIGH',
-            createdAt: new Date(Date.now() - 50 * 60000).toISOString(),
-            admittingDiagnosis: 'Suspected Lassa Encephalopathy',
-          },
-        ]);
       }
     } catch (e) {
       console.error('Error fetching dashboard data:', e);
@@ -112,53 +110,36 @@ export const Dashboard: React.FC = () => {
   return (
     <AppShell title="Operations Dashboard" onRefreshData={fetchDashboardData} isRefreshing={isRefreshing}>
       <div className="space-y-6">
-        {stats && stats.pendingAllocations > 0 && (
-          <div className="flex items-center justify-between rounded-md border border-status-critical-border bg-status-critical-bg p-4 shadow-xs">
+        {/* Queue Pressure Alert */}
+        {pendingAdmissions.length > 0 && (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-status-critical-border bg-status-critical-bg p-4 shadow-xs">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-status-critical text-white">
                 <AlertTriangle className="h-5 w-5" />
               </div>
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-status-critical">
-                  Queue Pressure Alert — {stats.pendingAllocations} Patients Awaiting Allocation
+                  Active Patient Admissions Queue — {pendingAdmissions.length} Registered Admission(s)
                 </h4>
                 <p className="text-xs text-clinical-on-surface-variant">
-                  High-priority Lassa isolation cases pending resource allocation decision.
+                  High-priority Lassa isolation cases ready for AI resource allocation.
                 </p>
               </div>
             </div>
             <Button
               variant="danger"
               size="sm"
-              onClick={() => navigate('/recommendations')}
+              onClick={() => navigate(`/recommendations?admissionId=${pendingAdmissions[0]?.id}`)}
               className="flex items-center gap-1 text-xs uppercase"
             >
-              <span>Review Recommendations</span>
+              <span>Process Recommendation ({pendingAdmissions[0]?.admissionNumber})</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </div>
         )}
 
+        {/* Dynamic Metric Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card statusBarColor="critical">
-            <CardContent className="flex items-center justify-between">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-clinical-on-surface-variant">
-                  Pending Allocations
-                </p>
-                <p className="text-3xl font-bold font-tabular text-clinical-navy mt-1">
-                  {stats?.pendingAllocations ?? 0}
-                </p>
-                <p className="text-[11px] font-medium text-status-critical mt-1 flex items-center gap-1">
-                  <Clock className="h-3 w-3" /> Requires Decision
-                </p>
-              </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-status-critical-bg text-status-critical">
-                <Users className="h-5 w-5" />
-              </div>
-            </CardContent>
-          </Card>
-
           <Card statusBarColor="info">
             <CardContent className="flex items-center justify-between">
               <div>
@@ -168,29 +149,44 @@ export const Dashboard: React.FC = () => {
                 <p className="text-3xl font-bold font-tabular text-clinical-navy mt-1">
                   {stats?.activeAdmissions ?? 0}
                 </p>
-                <p className="text-[11px] text-clinical-on-surface-variant mt-1">
-                  Total Patients Under Care
-                </p>
+                <span className="text-[10px] text-gray-500 font-medium">Currently in ward care</span>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-status-info-bg text-status-info">
-                <ShieldCheck className="h-5 w-5" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-status-info-bg text-status-info">
+                <Users className="h-6 w-6" />
               </div>
             </CardContent>
           </Card>
 
-          <Card statusBarColor={stats && stats.icuOccupancyRate > 80 ? 'critical' : 'warning'}>
+          <Card statusBarColor="warning">
             <CardContent className="flex items-center justify-between">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-clinical-on-surface-variant">
-                  ICU Capacity Rate
+                  ICU Bed Occupancy Rate
                 </p>
-                <p className="text-3xl font-bold font-tabular text-clinical-navy mt-1">
-                  {stats?.icuOccupancyRate ? `${stats.icuOccupancyRate.toFixed(0)}%` : '85%'}
+                <p className="text-3xl font-bold font-tabular text-status-warning mt-1">
+                  {stats?.icuOccupancyRate !== undefined ? `${stats.icuOccupancyRate}%` : '0%'}
                 </p>
-                <p className="text-[11px] text-status-warning font-semibold mt-1">High Demand Zone</p>
+                <span className="text-[10px] text-gray-500 font-medium">Calculated from ICU bed matrix</span>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-50 text-amber-600">
-                <BedDouble className="h-5 w-5" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-status-warning-bg text-status-warning">
+                <BedDouble className="h-6 w-6" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card statusBarColor="critical">
+            <CardContent className="flex items-center justify-between">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-clinical-on-surface-variant">
+                  Lassa Isolation Occupancy
+                </p>
+                <p className="text-3xl font-bold font-tabular text-status-critical mt-1">
+                  {stats?.isolationOccupancyRate !== undefined ? `${stats.isolationOccupancyRate}%` : '0%'}
+                </p>
+                <span className="text-[10px] text-gray-500 font-medium">Negative pressure units</span>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-status-critical-bg text-status-critical">
+                <ShieldCheck className="h-6 w-6" />
               </div>
             </CardContent>
           </Card>
@@ -199,123 +195,138 @@ export const Dashboard: React.FC = () => {
             <CardContent className="flex items-center justify-between">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-clinical-on-surface-variant">
-                  Isolation Ward Capacity
+                  Discharges Today
                 </p>
-                <p className="text-3xl font-bold font-tabular text-clinical-navy mt-1">
-                  {stats?.isolationOccupancyRate ? `${stats.isolationOccupancyRate.toFixed(0)}%` : '72%'}
+                <p className="text-3xl font-bold font-tabular text-status-ready mt-1">
+                  {stats?.todayDischarges ?? 0}
                 </p>
-                <p className="text-[11px] text-status-ready font-semibold mt-1">3 Beds Ready</p>
+                <span className="text-[10px] text-gray-500 font-medium">Decontamination pending</span>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-status-ready-bg text-status-ready">
-                <PackageCheck className="h-5 w-5" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-status-ready-bg text-status-ready">
+                <PackageCheck className="h-6 w-6" />
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-          <div className="lg:col-span-7 space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-status-info" />
-                  <span>Pending Allocation Queue</span>
-                </CardTitle>
-                <Button variant="outline" size="sm" onClick={() => navigate('/recommendations')}>
-                  View All Recommendations
-                </Button>
-              </CardHeader>
-              <CardContent className="p-0">
-                {pendingAdmissions.length === 0 ? (
-                  <div className="p-8 text-center text-xs text-clinical-on-surface-variant">
-                    <CheckCircle2 className="mx-auto h-8 w-8 text-status-ready mb-2" />
-                    All admission requests have been allocated. Queue clear.
-                  </div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Patient</TableHead>
-                        <TableHead>Priority</TableHead>
-                        <TableHead>Admitting Diagnosis</TableHead>
-                        <TableHead>Action</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <tbody>
-                      {pendingAdmissions.map((adm) => (
-                        <TableRow key={adm.id}>
-                          <TableCell className="font-semibold">
-                            <div>
-                              <p className="text-xs font-bold text-clinical-navy">{adm.patientName}</p>
-                              <p className="text-[10px] font-mono text-gray-500">{adm.admissionNumber}</p>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={adm.priority === 'CRITICAL' ? 'critical' : 'warning'}>
-                              {adm.priority}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="max-w-[200px] truncate text-[11px]">
-                            {adm.admittingDiagnosis || 'Lassa Fever Isolation'}
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              variant="primary"
-                              size="sm"
-                              onClick={() => navigate(`/recommendations?admissionId=${adm.id}`)}
-                              className="text-[11px]"
-                            >
-                              Recommend
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </tbody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="lg:col-span-5 space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BedDouble className="h-4 w-4 text-clinical-slate" />
-                  <span>Ward Occupancy Breakdown</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+        {/* Real Wards Capacity Matrix */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <BedDouble className="h-4 w-4 text-clinical-navy" />
+                Real Ward Capacity & Bed Availability Matrix
+              </span>
+              <Button variant="outline" size="sm" onClick={() => navigate('/beds')}>
+                Manage Beds & Wards
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Ward Name</TableHead>
+                  <TableHead>Total Beds</TableHead>
+                  <TableHead>Occupied</TableHead>
+                  <TableHead>Available</TableHead>
+                  <TableHead>Decontamination</TableHead>
+                  <TableHead>Maintenance</TableHead>
+                  <TableHead>Occupancy %</TableHead>
+                </TableRow>
+              </TableHeader>
+              <tbody>
                 {wards.map((w) => (
-                  <div key={w.wardId} className="space-y-1.5 border-b border-clinical-border pb-3 last:border-0 last:pb-0">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-clinical-navy">{w.wardName}</span>
-                      <span className="font-mono font-semibold text-clinical-on-surface-variant">
-                        {w.occupiedBeds} / {w.totalBeds} Beds ({w.occupancyPercentage}%)
-                      </span>
-                    </div>
-                    <div className="h-2 w-full rounded-full bg-clinical-container overflow-hidden flex">
-                      <div
-                        className={`h-full ${
-                          w.occupancyPercentage >= 85
-                            ? 'bg-status-critical'
-                            : w.occupancyPercentage >= 70
-                            ? 'bg-status-warning'
-                            : 'bg-status-ready'
-                        }`}
-                        style={{ width: `${w.occupancyPercentage}%` }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between text-[10px] text-gray-500">
-                      <span>Available: <strong className="text-status-ready font-mono">{w.availableBeds}</strong></span>
-                      <span>Decontamination: <strong className="text-status-warning font-mono">{w.cleaningBeds}</strong></span>
-                    </div>
-                  </div>
+                  <TableRow key={w.wardId}>
+                    <TableCell className="font-bold text-clinical-navy">{w.wardName}</TableCell>
+                    <TableCell className="font-mono">{w.totalBeds}</TableCell>
+                    <TableCell className="font-mono text-status-info font-semibold">{w.occupiedBeds}</TableCell>
+                    <TableCell className="font-mono text-status-ready font-bold">{w.availableBeds}</TableCell>
+                    <TableCell className="font-mono text-amber-600 font-semibold">{w.cleaningBeds}</TableCell>
+                    <TableCell className="font-mono text-gray-500">{w.maintenanceBeds}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-20 rounded-full bg-gray-200 overflow-hidden">
+                          <div
+                            className={`h-full ${
+                              w.occupancyPercentage >= 85
+                                ? 'bg-status-critical'
+                                : w.occupancyPercentage >= 70
+                                ? 'bg-status-warning'
+                                : 'bg-status-ready'
+                            }`}
+                            style={{ width: `${w.occupancyPercentage}%` }}
+                          />
+                        </div>
+                        <span className="font-mono text-xs font-bold">{w.occupancyPercentage}%</span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              </tbody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Active Admissions Pending Recommendations */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-status-info" />
+                Active Admissions Pending AI Allocation Recommendation
+              </span>
+              <Button variant="outline" size="sm" onClick={() => navigate('/patients')}>
+                View All Admissions
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            {pendingAdmissions.length === 0 ? (
+              <div className="p-6 text-center text-xs text-clinical-on-surface-variant">
+                <CheckCircle2 className="mx-auto h-8 w-8 text-status-ready mb-2" />
+                All active admissions have completed resource allocation decisions.
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Admission Number</TableHead>
+                    <TableHead>Patient ID</TableHead>
+                    <TableHead>Ward / Bed ID</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <tbody>
+                  {pendingAdmissions.map((adm) => (
+                    <TableRow key={adm.id}>
+                      <TableCell className="font-bold text-clinical-navy font-mono">
+                        {adm.admissionNumber}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">{adm.patientId}</TableCell>
+                      <TableCell className="text-xs">{adm.wardId || 'Isolation Ward A'}</TableCell>
+                      <TableCell>
+                        <Badge variant="info">{adm.status}</Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => navigate(`/recommendations?admissionId=${adm.id}`)}
+                          className="text-xs bg-status-info hover:bg-blue-700"
+                        >
+                          <Sparkles className="h-3.5 w-3.5 mr-1" />
+                          Process Recommendation
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </AppShell>
   );

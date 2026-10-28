@@ -24,19 +24,28 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
   const { user, logout } = useAuth();
 
-  const navItems = [
-    { label: 'Operations Dashboard', path: '/', icon: LayoutDashboard },
-    { label: 'Recommendations', path: '/recommendations', icon: Sparkles, badge: 'AI' },
-    { label: 'Patients', path: '/patients', icon: Users },
-    { label: 'Admissions', path: '/admissions', icon: UserCheck },
-    { label: 'Beds & Wards', path: '/beds', icon: BedDouble },
-    { label: 'Resources', path: '/resources', icon: Package },
-    { label: 'Inventory', path: '/inventory', icon: Boxes },
-    { label: 'Equipment', path: '/equipment', icon: Stethoscope },
-    { label: 'Maintenance', path: '/maintenance', icon: Wrench },
-    { label: 'Staff & Shifts', path: '/staff', icon: UserSquare2 },
-    { label: 'Audit Log', path: '/audit', icon: History },
+  const userRole = (user?.role || '').toUpperCase();
+  const isAdmin = userRole === 'ADMINISTRATOR' || userRole === 'ADMIN';
+
+  const allNavItems = [
+    { label: 'Operations Dashboard', path: '/', icon: LayoutDashboard, roles: ['*'] },
+    { label: 'Recommendations', path: '/recommendations', icon: Sparkles, badge: 'AI', roles: ['ADMIN', 'ADMINISTRATOR', 'WARD_MANAGER', 'NURSING_OFFICER', 'NURSE', 'MEDICAL_DOCTOR', 'DOCTOR'] },
+    { label: 'Patients', path: '/patients', icon: Users, roles: ['ADMIN', 'ADMINISTRATOR', 'WARD_MANAGER', 'NURSING_OFFICER', 'NURSE', 'MEDICAL_DOCTOR', 'DOCTOR'] },
+    { label: 'Admissions', path: '/admissions', icon: UserCheck, roles: ['ADMIN', 'ADMINISTRATOR', 'WARD_MANAGER', 'NURSING_OFFICER', 'NURSE', 'MEDICAL_DOCTOR', 'DOCTOR'] },
+    { label: 'Beds & Wards', path: '/beds', icon: BedDouble, roles: ['ADMIN', 'ADMINISTRATOR', 'WARD_MANAGER', 'NURSING_OFFICER', 'NURSE', 'MEDICAL_DOCTOR', 'DOCTOR', 'HYGIENE_STAFF', 'CLEANER'] },
+    { label: 'Bed Sanitation', path: '/bed-cleaning', icon: Sparkles, roles: ['ADMIN', 'ADMINISTRATOR', 'WARD_MANAGER', 'NURSING_OFFICER', 'NURSE', 'HYGIENE_STAFF', 'CLEANER'] },
+    { label: 'Resources', path: '/resources', icon: Package, roles: ['ADMIN', 'ADMINISTRATOR', 'WARD_MANAGER', 'RESOURCE_MANAGER', 'NURSING_OFFICER', 'NURSE'] },
+    { label: 'Inventory', path: '/inventory', icon: Boxes, roles: ['ADMIN', 'ADMINISTRATOR', 'WARD_MANAGER', 'RESOURCE_MANAGER', 'NURSING_OFFICER', 'NURSE'] },
+    { label: 'Equipment', path: '/equipment', icon: Stethoscope, roles: ['ADMIN', 'ADMINISTRATOR', 'WARD_MANAGER', 'EQUIPMENT_OFFICER', 'RESOURCE_MANAGER', 'MEDICAL_DOCTOR', 'DOCTOR'] },
+    { label: 'Maintenance', path: '/maintenance', icon: Wrench, roles: ['ADMIN', 'ADMINISTRATOR', 'WARD_MANAGER', 'EQUIPMENT_OFFICER'] },
+    { label: 'Staff & Shifts', path: '/staff', icon: UserSquare2, roles: ['ADMIN', 'ADMINISTRATOR', 'WARD_MANAGER', 'NURSING_OFFICER', 'NURSE'] },
+    { label: 'Audit Log', path: '/audit', icon: History, roles: ['ADMIN', 'ADMINISTRATOR'] },
   ];
+
+  const navItems = allNavItems.filter(item => {
+    if (item.roles.includes('*') || isAdmin) return true;
+    return item.roles.some(r => r === userRole);
+  });
 
   return (
     <aside className="flex h-full w-[280px] flex-col justify-between border-r border-clinical-border bg-clinical-navy text-white">

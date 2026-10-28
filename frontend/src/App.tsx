@@ -12,6 +12,8 @@ import { EquipmentPage } from './pages/Equipment';
 import { StaffShifts } from './pages/StaffShifts';
 import { AuditLogPage } from './pages/AuditLog';
 
+import { BedCleaningPage } from './pages/BedCleaning';
+
 export const App: React.FC = () => {
   return (
     <AuthProvider>
@@ -58,6 +60,14 @@ export const App: React.FC = () => {
             element={
               <ProtectedRoute>
                 <BedsWards />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/bed-cleaning"
+            element={
+              <ProtectedRoute>
+                <BedCleaningPage />
               </ProtectedRoute>
             }
           />

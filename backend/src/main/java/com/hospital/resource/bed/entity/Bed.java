@@ -76,9 +76,7 @@ public class Bed {
     public String getBedType() { return bedType; }
     public void setBedType(String bedType) { this.bedType = bedType; }
     public Boolean getIsIsolationCapable() { return isIsolationCapable; }
-    public Boolean getIsIsolation() { return isIsolationCapable; }
     public void setIsIsolationCapable(Boolean isIsolationCapable) { this.isIsolationCapable = isIsolationCapable; }
-    public void setIsIsolation(Boolean isIsolation) { this.isIsolationCapable = isIsolation; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     public UUID getCurrentAdmissionId() { return currentAdmissionId; }

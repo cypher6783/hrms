@@ -35,11 +35,11 @@ public interface AdmissionRepository extends JpaRepository<Admission, UUID> {
 
     Page<Admission> findByStatus(String status, Pageable pageable);
 
-    @Query("SELECT a FROM Admission a WHERE (:patientId IS NULL OR a.patientId = :patientId) " +
-            "AND (:wardId IS NULL OR a.wardId = :wardId) " +
+    @Query("SELECT a FROM Admission a WHERE (cast(:patientId as string) IS NULL OR a.patientId = :patientId) " +
+            "AND (cast(:wardId as string) IS NULL OR a.wardId = :wardId) " +
             "AND (:status IS NULL OR a.status = :status) " +
-            "AND (:dateFrom IS NULL OR a.admittedAt >= :dateFrom) " +
-            "AND (:dateTo IS NULL OR a.admittedAt <= :dateTo)")
+            "AND (cast(:dateFrom as timestamp) IS NULL OR a.admittedAt >= :dateFrom) " +
+            "AND (cast(:dateTo as timestamp) IS NULL OR a.admittedAt <= :dateTo)")
     Page<Admission> searchAdmissions(
             @Param("patientId") UUID patientId,
             @Param("wardId") UUID wardId,

@@ -51,8 +51,7 @@ public class PatientMapperImpl implements PatientMapper {
                 patient.getId(),
                 patient.getPatientNumber(),
                 patient.getFullName(),
-                patient.getGender(),
-                patient.getDateOfBirth()
+                patient.getIsActive()
         );
     }
 

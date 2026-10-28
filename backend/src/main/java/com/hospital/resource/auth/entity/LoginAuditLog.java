@@ -40,6 +40,7 @@ public class LoginAuditLog {
     @Column(name = "user_agent", length = 500)
     private String userAgent;
 
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private String details;
 

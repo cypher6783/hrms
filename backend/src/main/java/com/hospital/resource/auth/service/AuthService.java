@@ -134,12 +134,13 @@ public class AuthService {
 
     private void logLoginAttempt(String username, UUID userId, String eventType, String ipAddress, String userAgent, String details) {
         LoginAuditLog auditLog = LoginAuditLog.builder()
+                .timestamp(Instant.now())
                 .usernameAttempted(username)
                 .user(userId != null ? userRepository.findById(userId).orElse(null) : null)
                 .eventType(eventType)
                 .ipAddress(ipAddress)
                 .userAgent(userAgent)
-                .details(details)
+                .details(details != null ? "{\"message\":\"" + details + "\"}" : null)
                 .build();
         loginAuditLogRepository.save(auditLog);
     }

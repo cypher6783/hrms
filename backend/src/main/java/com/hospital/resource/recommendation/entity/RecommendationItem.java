@@ -35,6 +35,7 @@ public class RecommendationItem {
     private BigDecimal confidenceScore;
 
     @Column(name = "scoring_breakdown", columnDefinition = "jsonb")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
     private String scoringBreakdown;
 
     @Column(columnDefinition = "TEXT")

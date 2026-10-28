@@ -37,7 +37,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String username = claims.get("username", String.class);
             String role = claims.get("role", String.class);
 
-            List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+            List<SimpleGrantedAuthority> authorities = new java.util.ArrayList<>();
+            if (role != null) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+                if ("ADMINISTRATOR".equals(role)) authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                if ("ADMIN".equals(role)) authorities.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR"));
+                if ("NURSING_OFFICER".equals(role)) authorities.add(new SimpleGrantedAuthority("ROLE_NURSE"));
+                if ("NURSE".equals(role)) authorities.add(new SimpleGrantedAuthority("ROLE_NURSING_OFFICER"));
+                if ("MEDICAL_DOCTOR".equals(role)) authorities.add(new SimpleGrantedAuthority("ROLE_DOCTOR"));
+                if ("DOCTOR".equals(role)) authorities.add(new SimpleGrantedAuthority("ROLE_MEDICAL_DOCTOR"));
+                if ("HYGIENE_STAFF".equals(role)) authorities.add(new SimpleGrantedAuthority("ROLE_CLEANER"));
+                if ("CLEANER".equals(role)) authorities.add(new SimpleGrantedAuthority("ROLE_HYGIENE_STAFF"));
+            }
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(userId, username, authorities);
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

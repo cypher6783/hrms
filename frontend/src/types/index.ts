@@ -62,15 +62,13 @@ export interface Patient {
 }
 
 export interface PatientRequest {
-  firstName: string;
-  lastName: string;
+  fullName: string;
   gender: string;
   dateOfBirth: string;
-  contactNumber?: string;
-  emergencyContact?: string;
-  infectionStatus: string;
-  isolationRequired: boolean;
-  careLevel: string;
+  phoneNumber?: string;
+  address?: string;
+  nextOfKinName?: string;
+  nextOfKinPhone?: string;
 }
 
 // Admission Models

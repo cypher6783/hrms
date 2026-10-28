@@ -52,7 +52,9 @@ public class ShiftMapperImpl implements ShiftMapper {
                 shift.getShiftDate(),
                 shift.getStartTime(),
                 shift.getEndTime(),
-                shift.getStatus()
+                shift.getWardId(),
+                shift.getStatus(),
+                shift.getCreatedAt()
         );
     }
 

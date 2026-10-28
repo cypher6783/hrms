@@ -79,9 +79,16 @@ public class RefreshToken {
             token.setUser(user);
             token.setExpiresAt(expiresAt);
             token.setRevoked(revoked);
-            token.setCreatedAt(createdAt);
+            token.setCreatedAt(createdAt != null ? createdAt : Instant.now());
             token.setRawToken(rawToken);
             return token;
+        }
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (this.createdAt == null) {
+            this.createdAt = Instant.now();
         }
     }
 

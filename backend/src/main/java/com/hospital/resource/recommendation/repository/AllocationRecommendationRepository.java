@@ -12,5 +12,7 @@ public interface AllocationRecommendationRepository extends JpaRepository<Alloca
 
     List<AllocationRecommendation> findByAdmissionIdAndStatus(UUID admissionId, String status);
 
+    List<AllocationRecommendation> findByAdmissionId(UUID admissionId);
+
     List<AllocationRecommendation> findByStatus(String status);
 }

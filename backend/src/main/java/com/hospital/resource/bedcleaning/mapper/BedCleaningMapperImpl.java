@@ -1,6 +1,7 @@
 package com.hospital.resource.bedcleaning.mapper;
 
 import com.hospital.resource.bedcleaning.dto.CleaningTaskResponse;
+import com.hospital.resource.bedcleaning.dto.CleaningTaskSummaryResponse;
 import com.hospital.resource.bedcleaning.entity.BedCleaning;
 import org.springframework.stereotype.Component;
 
@@ -29,8 +30,27 @@ public class BedCleaningMapperImpl implements BedCleaningMapper {
     }
 
     @Override
+    public CleaningTaskSummaryResponse toSummary(BedCleaning cleaning) {
+        if (cleaning == null) return null;
+        return new CleaningTaskSummaryResponse(
+                cleaning.getId(),
+                cleaning.getBedId(),
+                cleaning.getAdmissionId(),
+                cleaning.getStatus(),
+                cleaning.getAssignedTo(),
+                cleaning.getCreatedAt()
+        );
+    }
+
+    @Override
     public List<CleaningTaskResponse> toResponseList(List<BedCleaning> cleaningTasks) {
         if (cleaningTasks == null) return List.of();
         return cleaningTasks.stream().map(this::toResponse).toList();
+    }
+
+    @Override
+    public List<CleaningTaskSummaryResponse> toSummaryList(List<BedCleaning> cleaningTasks) {
+        if (cleaningTasks == null) return List.of();
+        return cleaningTasks.stream().map(this::toSummary).toList();
     }
 }

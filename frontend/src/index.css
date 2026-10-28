@@ -1,9 +1,30 @@
 @import "tailwindcss";
 
+:root {
+  --stitch-surface: #fcf8fa;
+  --stitch-surface-dim: #dcd9db;
+  --stitch-surface-bright: #fcf8fa;
+  --stitch-container-lowest: #ffffff;
+  --stitch-container-low: #f6f3f5;
+  --stitch-container: #f0edef;
+  --stitch-container-high: #eae7e9;
+  --stitch-container-highest: #e4e2e4;
+  --stitch-on-surface: #1b1b1d;
+  --stitch-on-surface-variant: #45464d;
+  --stitch-outline: #76777d;
+  --stitch-outline-variant: #c6c6cd;
+  --stitch-primary: #000000;
+  --stitch-primary-container: #131b2e;
+  --stitch-secondary: #515f74;
+  --stitch-secondary-container: #d5e3fd;
+  --stitch-error: #ba1a1a;
+  --stitch-error-container: #ffdad6;
+}
+
 @layer base {
   body {
-    background-color: #fcf8fa;
-    color: #1b1b1d;
+    background-color: var(--stitch-surface);
+    color: var(--stitch-on-surface);
     font-family: Inter, system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
