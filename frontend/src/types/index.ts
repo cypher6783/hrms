@@ -184,7 +184,8 @@ export interface Equipment {
   id: string;
   serialNumber: string;
   name: string;
-  category: 'VENTILATOR' | 'PATIENT_MONITOR' | 'INFUSION_PUMP' | 'DEFIBRILLATOR' | 'DIALYSIS';
+  category?: string;
+  equipmentType?: string;
   status: 'AVAILABLE' | 'IN_USE' | 'RESERVED' | 'UNDER_MAINTENANCE' | 'DECOMMISSIONED';
   locationWardId?: string;
   locationWardName?: string;
@@ -209,10 +210,13 @@ export interface Staff {
   id: string;
   staffNumber: string;
   fullName: string;
-  role: 'DOCTOR' | 'NURSE' | 'CLEANER' | 'ADMIN' | 'LAB_TECH';
-  unit: string;
-  contactNumber: string;
-  status: 'ACTIVE' | 'ON_LEAVE' | 'INACTIVE';
+  role: string;
+  unit?: string;
+  specialization?: string;
+  contactNumber?: string;
+  status?: string;
+  availabilityStatus?: string;
+  wardId?: string;
 }
 
 export interface Shift {
