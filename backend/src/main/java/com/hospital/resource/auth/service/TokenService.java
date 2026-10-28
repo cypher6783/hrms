@@ -33,6 +33,7 @@ public class TokenService {
                 .tokenHash(tokenHash)
                 .user(user)
                 .expiresAt(Instant.now().plusMillis(jwtTokenProvider.getRefreshTokenExpiryMs()))
+                .createdAt(Instant.now())
                 .revoked(false)
                 .build();
 

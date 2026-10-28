@@ -11,10 +11,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
 public interface PatientMapper {
-
-    PatientMapper INSTANCE = Mappers.getMapper(PatientMapper.class);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "patientNumber", ignore = true)

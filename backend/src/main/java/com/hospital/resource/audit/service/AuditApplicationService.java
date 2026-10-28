@@ -45,7 +45,7 @@ public class AuditApplicationService {
         return new AuditLogResponse(
                 log.getId(), log.getTimestamp(), log.getUserId(),
                 log.getActionType(), log.getEntityType(), log.getEntityId(),
-                log.getIpAddress(), log.getCreatedAt()
+                log.getIpAddress(), log.getTimestamp()
         );
     }
 }

@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/equipment/{equipmentId}/maintenance")
+@RequestMapping("/api/v1/equipment")
 @RequiredArgsConstructor
 public class EquipmentMaintenanceController {
 
     private final EquipmentMaintenanceApplicationService maintenanceService;
 
-    @PostMapping
+    @PostMapping("/{equipmentId}/maintenance")
     public ApiResponse<MaintenanceResponse> scheduleMaintenance(
             @PathVariable UUID equipmentId,
             @Valid @RequestBody MaintenanceRequest request) {
@@ -27,19 +27,25 @@ public class EquipmentMaintenanceController {
         return ApiResponse.success(maintenanceService.scheduleMaintenance(equipmentId, request, userId));
     }
 
-    @GetMapping
+    @GetMapping("/{equipmentId}/maintenance")
     public ApiResponse<List<MaintenanceResponse>> getMaintenanceByEquipment(@PathVariable UUID equipmentId) {
         return ApiResponse.success(maintenanceService.getMaintenanceByEquipment(equipmentId));
     }
 
-    @GetMapping("/overdue")
+    @GetMapping("/maintenance/overdue")
     public ApiResponse<List<MaintenanceResponse>> getOverdueMaintenance() {
         return ApiResponse.success(maintenanceService.getOverdueMaintenance());
     }
 
-    @PostMapping("/{maintenanceId}/complete")
-    public ApiResponse<MaintenanceResponse> completeMaintenance(@PathVariable UUID equipmentId, @PathVariable UUID maintenanceId) {
+    @PostMapping("/maintenance/{maintenanceId}/complete")
+    public ApiResponse<MaintenanceResponse> completeMaintenance(@PathVariable UUID maintenanceId) {
         UUID userId = SecurityUtils.getCurrentUserId();
         return ApiResponse.success(maintenanceService.completeMaintenance(maintenanceId, userId));
+    }
+
+    @PostMapping("/maintenance/{maintenanceId}/verify")
+    public ApiResponse<MaintenanceResponse> verifyAndReturnToService(@PathVariable UUID maintenanceId) {
+        UUID userId = SecurityUtils.getCurrentUserId();
+        return ApiResponse.success(maintenanceService.verifyAndReturnToService(maintenanceId, userId));
     }
 }

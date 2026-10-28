@@ -44,4 +44,27 @@ public class ResourceController {
         UUID userId = SecurityUtils.getCurrentUserId();
         return ApiResponse.success(resourceService.updateResource(id, request, userId));
     }
+
+    @PostMapping("/reservations")
+    public ApiResponse<ResourceReservationResponse> reserveResource(@Valid @RequestBody ResourceReservationRequest request) {
+        UUID userId = SecurityUtils.getCurrentUserId();
+        return ApiResponse.success(resourceService.reserveResource(request, userId));
+    }
+
+    @PostMapping("/allocations")
+    public ApiResponse<ResourceAllocationResponse> allocateResource(@Valid @RequestBody ResourceAllocationRequest request) {
+        UUID userId = SecurityUtils.getCurrentUserId();
+        return ApiResponse.success(resourceService.allocateResource(request, userId));
+    }
+
+    @PutMapping("/allocations/{allocationId}/release")
+    public ApiResponse<ResourceAllocationResponse> releaseResource(@PathVariable UUID allocationId) {
+        UUID userId = SecurityUtils.getCurrentUserId();
+        return ApiResponse.success(resourceService.releaseResource(allocationId, userId));
+    }
+
+    @GetMapping("/{id}/utilization")
+    public ApiResponse<ResourceUtilizationResponse> getUtilizationMetrics(@PathVariable UUID id) {
+        return ApiResponse.success(resourceService.getUtilizationMetrics(id));
+    }
 }
