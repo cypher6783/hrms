@@ -26,11 +26,11 @@ public interface BedCleaningRepository extends JpaRepository<BedCleaning, UUID> 
 
     Page<BedCleaning> findByStatus(String status, Pageable pageable);
 
-    @Query("SELECT bc FROM BedCleaning bc WHERE (:bedId IS NULL OR bc.bedId = :bedId) " +
+    @Query("SELECT bc FROM BedCleaning bc WHERE (cast(:bedId as string) IS NULL OR bc.bedId = :bedId) " +
             "AND (:status IS NULL OR bc.status = :status) " +
-            "AND (:assignedTo IS NULL OR bc.assignedTo = :assignedTo) " +
-            "AND (:dateFrom IS NULL OR bc.createdAt >= :dateFrom) " +
-            "AND (:dateTo IS NULL OR bc.createdAt <= :dateTo)")
+            "AND (cast(:assignedTo as string) IS NULL OR bc.assignedTo = :assignedTo) " +
+            "AND (cast(:dateFrom as timestamp) IS NULL OR bc.createdAt >= :dateFrom) " +
+            "AND (cast(:dateTo as timestamp) IS NULL OR bc.createdAt <= :dateTo)")
     Page<BedCleaning> searchCleaningTasks(
             @Param("bedId") UUID bedId,
             @Param("status") String status,

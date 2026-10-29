@@ -19,9 +19,9 @@ public interface StaffShiftRepository extends JpaRepository<StaffShift, UUID> {
 
     List<StaffShift> findByShiftDate(LocalDate shiftDate);
 
-    @Query("SELECT ss FROM StaffShift ss WHERE (:wardId IS NULL OR ss.wardId = :wardId) " +
-            "AND (:shiftDateFrom IS NULL OR ss.shiftDate >= :shiftDateFrom) " +
-            "AND (:shiftDateTo IS NULL OR ss.shiftDate <= :shiftDateTo) " +
+    @Query("SELECT ss FROM StaffShift ss WHERE (cast(:wardId as string) IS NULL OR ss.wardId = :wardId) " +
+            "AND (cast(:shiftDateFrom as date) IS NULL OR ss.shiftDate >= :shiftDateFrom) " +
+            "AND (cast(:shiftDateTo as date) IS NULL OR ss.shiftDate <= :shiftDateTo) " +
             "AND (:shiftName IS NULL OR ss.shiftName = :shiftName) " +
             "AND (:status IS NULL OR ss.status = :status)")
     Page<StaffShift> searchShifts(

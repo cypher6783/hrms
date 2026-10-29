@@ -24,10 +24,10 @@ public interface StaffRepository extends JpaRepository<Staff, UUID> {
 
     Page<Staff> findByFullNameContainingIgnoreCase(String name, Pageable pageable);
 
-    @Query("SELECT s FROM Staff s WHERE (:name IS NULL OR LOWER(s.fullName) LIKE LOWER(CONCAT('%', :name, '%'))) " +
+    @Query("SELECT s FROM Staff s WHERE (cast(:name as string) IS NULL OR LOWER(s.fullName) LIKE LOWER(CONCAT('%', cast(:name as string), '%'))) " +
             "AND (:role IS NULL OR s.role = :role) " +
             "AND (:specialization IS NULL OR s.specialization = :specialization) " +
-            "AND (:wardId IS NULL OR s.wardId = :wardId) " +
+            "AND (cast(:wardId as string) IS NULL OR s.wardId = :wardId) " +
             "AND (:availabilityStatus IS NULL OR s.availabilityStatus = :availabilityStatus) " +
             "AND (:certificationStatus IS NULL OR s.certificationStatus = :certificationStatus)")
     Page<Staff> searchStaff(

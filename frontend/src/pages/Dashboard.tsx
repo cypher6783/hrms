@@ -93,7 +93,13 @@ export const Dashboard: React.FC = () => {
 
       // 2. Load Real Active Admissions
       if (admissionsRes.status === 'fulfilled' && admissionsRes.value.data.success) {
-        const content = admissionsRes.value.data.data?.content || Array.isArray(admissionsRes.value.data.data) ? admissionsRes.value.data.data : [];
+        const rawData = admissionsRes.value.data.data;
+        const rawContent: Admission[] = Array.isArray(rawData?.content)
+          ? rawData.content
+          : Array.isArray(rawData)
+          ? rawData
+          : [];
+        const content = rawContent.filter((adm: any) => adm.status !== 'DISCHARGED' && adm.isActive !== false);
         setPendingAdmissions(content);
       }
     } catch (e) {
@@ -111,7 +117,7 @@ export const Dashboard: React.FC = () => {
     <AppShell title="Operations Dashboard" onRefreshData={fetchDashboardData} isRefreshing={isRefreshing}>
       <div className="space-y-6">
         {/* Queue Pressure Alert */}
-        {pendingAdmissions.length > 0 && (
+        {Array.isArray(pendingAdmissions) && pendingAdmissions.length > 0 && (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-status-critical-border bg-status-critical-bg p-4 shadow-xs">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-status-critical text-white">
@@ -236,7 +242,7 @@ export const Dashboard: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <tbody>
-                {wards.map((w) => (
+                {Array.isArray(wards) && wards.map((w) => (
                   <TableRow key={w.wardId}>
                     <TableCell className="font-bold text-clinical-navy">{w.wardName}</TableCell>
                     <TableCell className="font-mono">{w.totalBeds}</TableCell>
@@ -282,7 +288,7 @@ export const Dashboard: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            {pendingAdmissions.length === 0 ? (
+            {!Array.isArray(pendingAdmissions) || pendingAdmissions.length === 0 ? (
               <div className="p-6 text-center text-xs text-clinical-on-surface-variant">
                 <CheckCircle2 className="mx-auto h-8 w-8 text-status-ready mb-2" />
                 All active admissions have completed resource allocation decisions.
@@ -299,7 +305,7 @@ export const Dashboard: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <tbody>
-                  {pendingAdmissions.map((adm) => (
+                  {Array.isArray(pendingAdmissions) && pendingAdmissions.map((adm) => (
                     <TableRow key={adm.id}>
                       <TableCell className="font-bold text-clinical-navy font-mono">
                         {adm.admissionNumber}

@@ -13,9 +13,11 @@ import { StaffShifts } from './pages/StaffShifts';
 import { AuditLogPage } from './pages/AuditLog';
 
 import { BedCleaningPage } from './pages/BedCleaning';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 export const App: React.FC = () => {
   return (
+    <ErrorBoundary>
     <AuthProvider>
       <Router>
         <Routes>
@@ -125,6 +127,7 @@ export const App: React.FC = () => {
         </Routes>
       </Router>
     </AuthProvider>
+    </ErrorBoundary>
   );
 };
 

@@ -43,7 +43,8 @@ export const StaffShifts: React.FC = () => {
     try {
       const response = await apiClient.get('/staff');
       if (response.data.success && response.data.data) {
-        const list = response.data.data.content || response.data.data;
+        const raw = response.data.data;
+        const list = Array.isArray(raw?.content) ? raw.content : (Array.isArray(raw) ? raw : []);
         if (Array.isArray(list) && list.length > 0) {
           setStaffList(list);
           return;

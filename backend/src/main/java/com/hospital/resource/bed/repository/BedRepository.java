@@ -35,7 +35,7 @@ public interface BedRepository extends JpaRepository<Bed, UUID> {
 
     List<Bed> findByBedType(String bedType);
 
-    @Query("SELECT b FROM Bed b WHERE (:wardId IS NULL OR b.wardId = :wardId) AND (:bedType IS NULL OR b.bedType = :bedType) AND (:status IS NULL OR b.status = :status) AND (:isIsolationCapable IS NULL OR b.isIsolationCapable = :isIsolationCapable)")
+    @Query("SELECT b FROM Bed b WHERE (cast(:wardId as string) IS NULL OR b.wardId = :wardId) AND (:bedType IS NULL OR b.bedType = :bedType) AND (:status IS NULL OR b.status = :status) AND (:isIsolationCapable IS NULL OR b.isIsolationCapable = :isIsolationCapable)")
     List<Bed> findBedsWithFilters(
             @Param("wardId") UUID wardId,
             @Param("bedType") String bedType,
