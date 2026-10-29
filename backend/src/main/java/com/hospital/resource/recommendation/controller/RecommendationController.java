@@ -44,4 +44,13 @@ public class RecommendationController {
         UUID userId = SecurityUtils.getCurrentUserId();
         return ApiResponse.success(recommendationService.recordDecision(itemId, request, userId));
     }
+
+    @PostMapping("/admission/{admissionId}/override")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'ADMIN', 'WARD_MANAGER', 'MEDICAL_DOCTOR', 'DOCTOR')")
+    public ApiResponse<RecommendationDecisionResponse> overrideAdmissionAllocation(
+            @PathVariable UUID admissionId,
+            @Valid @RequestBody RecommendationOverrideRequest request) {
+        UUID userId = SecurityUtils.getCurrentUserId();
+        return ApiResponse.success(recommendationService.overrideAdmissionAllocation(admissionId, request, userId));
+    }
 }

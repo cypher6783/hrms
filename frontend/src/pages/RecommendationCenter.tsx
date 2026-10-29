@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { apiClient } from '../api/client';
-import type { Recommendation, Admission } from '../types';
+import type { Recommendation, Admission, Bed, Equipment } from '../types';
 
 export const RecommendationCenter: React.FC = () => {
   const { user } = useAuth();
@@ -45,10 +45,15 @@ export const RecommendationCenter: React.FC = () => {
   const [overrideModalOpen, setOverrideModalOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
+  // Available options for Override
+  const [availableBeds, setAvailableBeds] = useState<Bed[]>([]);
+  const [availableEquipment, setAvailableEquipment] = useState<Equipment[]>([]);
+  const [selectedBedId, setSelectedBedId] = useState<string>('');
+  const [selectedEquipmentId, setSelectedEquipmentId] = useState<string>('');
+
   // Form Inputs
   const [rejectionReason, setRejectionReason] = useState('');
   const [overrideJustification, setOverrideJustification] = useState('');
-  const [overrideEntityId, setOverrideEntityId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 1. Fetch Admissions List to populate selector dropdown
@@ -89,7 +94,37 @@ export const RecommendationCenter: React.FC = () => {
     }
   };
 
-  // 3. Generate New Recommendation Batch
+  // 3. Fetch Available Beds & Equipment for Manual Override Dropdowns
+  const fetchAvailableOptions = async () => {
+    try {
+      const [bedsRes, eqRes] = await Promise.all([
+        apiClient.get('/beds/filter?status=AVAILABLE'),
+        apiClient.get('/equipment'),
+      ]);
+      if (bedsRes.data.success && Array.isArray(bedsRes.data.data)) {
+        setAvailableBeds(bedsRes.data.data);
+      }
+      if (eqRes.data.success && Array.isArray(eqRes.data.data)) {
+        setAvailableEquipment(
+          eqRes.data.data.filter((e: Equipment) => e.status === 'AVAILABLE')
+        );
+      }
+    } catch (e) {
+      console.error('Error fetching available beds/equipment:', e);
+    }
+  };
+
+  // Open Override Modal
+  const openOverrideModal = (itemId?: string) => {
+    setSelectedItemId(itemId || null);
+    setSelectedBedId('');
+    setSelectedEquipmentId('');
+    setOverrideJustification('');
+    fetchAvailableOptions();
+    setOverrideModalOpen(true);
+  };
+
+  // 4. Generate New Recommendation Batch
   const handleGenerateRecommendation = async () => {
     if (!selectedAdmissionId) return;
     setIsGenerating(true);
@@ -130,6 +165,7 @@ export const RecommendationCenter: React.FC = () => {
       });
       setFeedbackMsg({ type: 'success', text: 'Allocation recommendation ACCEPTED and recorded in audit log!' });
       fetchRecommendation();
+      fetchAdmissions();
     } catch (e: any) {
       console.error('Failed to accept recommendation:', e);
       setFeedbackMsg({ type: 'error', text: e.response?.data?.message || 'Error executing Accept decision.' });
@@ -145,7 +181,7 @@ export const RecommendationCenter: React.FC = () => {
     try {
       await apiClient.post(`/recommendations/items/${selectedItemId}/decide`, {
         decisionType: 'REJECT',
-        overrideJustification: rejectionReason,
+        overrideJustification: rejectionReason.trim(),
       });
       setRejectModalOpen(false);
       setRejectionReason('');
@@ -160,27 +196,51 @@ export const RecommendationCenter: React.FC = () => {
   };
 
   const handleOverrideSubmit = async () => {
-    if (!selectedItemId || !overrideJustification.trim() || !overrideEntityId.trim()) return;
+    if (!selectedBedId) {
+      setFeedbackMsg({ type: 'error', text: 'Please select an available bed for the manual override.' });
+      return;
+    }
+    if (!overrideJustification.trim() || overrideJustification.trim().length < 5) {
+      setFeedbackMsg({ type: 'error', text: 'Clinical justification is mandatory (minimum 5 characters).' });
+      return;
+    }
     setIsSubmitting(true);
     setFeedbackMsg(null);
     try {
-      await apiClient.post(`/recommendations/items/${selectedItemId}/decide`, {
-        decisionType: 'OVERRIDE',
-        overriddenEntityId: overrideEntityId,
-        overrideJustification: overrideJustification,
-      });
+      if (selectedItemId) {
+        // Item-level override
+        await apiClient.post(`/recommendations/items/${selectedItemId}/decide`, {
+          decisionType: 'OVERRIDE',
+          overriddenEntityId: selectedBedId,
+          overrideJustification: overrideJustification.trim(),
+        });
+      } else {
+        // Admission-level emergency override
+        await apiClient.post(`/recommendations/admission/${selectedAdmissionId}/override`, {
+          overriddenBedId: selectedBedId,
+          overriddenEquipmentId: selectedEquipmentId || null,
+          overrideJustification: overrideJustification.trim(),
+        });
+      }
       setOverrideModalOpen(false);
       setOverrideJustification('');
-      setOverrideEntityId('');
-      setFeedbackMsg({ type: 'success', text: 'Manual OVERRIDE recorded successfully in immutable audit log.' });
+      setSelectedBedId('');
+      setSelectedEquipmentId('');
+      setFeedbackMsg({
+        type: 'success',
+        text: 'Manual clinical override applied successfully and recorded in immutable audit log!',
+      });
       fetchRecommendation();
+      fetchAdmissions();
     } catch (e: any) {
       console.error('Failed to submit manual override:', e);
-      setFeedbackMsg({ type: 'error', text: e.response?.data?.message || 'Error executing Manual Override.' });
+      setFeedbackMsg({ type: 'error', text: e.response?.data?.message || 'Error executing manual override.' });
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const currentAdmission = admissionsList.find((a) => a.id === selectedAdmissionId);
 
   return (
     <AppShell title="AI Resource Recommendation Center">
@@ -195,14 +255,14 @@ export const RecommendationCenter: React.FC = () => {
               <select
                 value={selectedAdmissionId}
                 onChange={(e) => setSelectedAdmissionId(e.target.value)}
-                className="rounded border border-clinical-border bg-white py-1.5 px-3 text-xs font-mono font-bold text-clinical-navy focus:outline-none min-w-[280px]"
+                className="rounded border border-clinical-border bg-white py-1.5 px-3 text-xs font-mono font-bold text-clinical-navy focus:outline-none min-w-[300px]"
               >
                 {admissionsList.length === 0 ? (
                   <option value="">No Active Admissions Found</option>
                 ) : (
                   admissionsList.map((adm) => (
                     <option key={adm.id} value={adm.id}>
-                      {adm.admissionNumber} (ID: {adm.id.substring(0, 8)}...)
+                      {adm.admissionNumber} {adm.bedNumber ? `(Bed: ${adm.bedNumber})` : '(No Bed Allocated)'} - {adm.patientName || `Patient: ${adm.patientId?.substring(0, 8)}`}
                     </option>
                   ))
                 )}
@@ -217,14 +277,28 @@ export const RecommendationCenter: React.FC = () => {
               className="mt-4 bg-status-info hover:bg-blue-700"
             >
               <Sparkles className="h-4 w-4 mr-1" />
-              Generate Recommendation Batch
+              Generate Recommendation
             </Button>
+
+            {canDecide && selectedAdmissionId && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openOverrideModal()}
+                className="mt-4 border-amber-500 text-amber-700 hover:bg-amber-50"
+              >
+                <FileEdit className="h-3.5 w-3.5 mr-1 text-amber-600" />
+                Manual Bed Allocation Override
+              </Button>
+            )}
           </div>
 
-          <Button variant="outline" size="sm" onClick={() => fetchRecommendation()}>
-            <RefreshCw className="h-3.5 w-3.5 mr-1" />
-            Refresh Batch
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => fetchRecommendation()}>
+              <RefreshCw className="h-3.5 w-3.5 mr-1" />
+              Refresh
+            </Button>
+          </div>
         </div>
 
         {/* Feedback Alert */}
@@ -262,20 +336,35 @@ export const RecommendationCenter: React.FC = () => {
                   No Active Recommendation Batch Found
                 </h3>
                 <p className="text-xs text-clinical-on-surface-variant mt-1 max-w-md mx-auto">
-                  There is currently no allocation recommendation generated for Admission ID{' '}
-                  <span className="font-mono font-bold">{selectedAdmissionId}</span>.
+                  There is currently no allocation recommendation generated for Admission{' '}
+                  <span className="font-mono font-bold">
+                    {currentAdmission?.admissionNumber || selectedAdmissionId}
+                  </span>.
                 </p>
               </div>
-              <Button
-                variant="primary"
-                size="md"
-                isLoading={isGenerating}
-                onClick={handleGenerateRecommendation}
-                className="bg-status-info hover:bg-blue-700"
-              >
-                <Sparkles className="h-4 w-4 mr-2" />
-                Generate Allocation Recommendation Batch
-              </Button>
+              <div className="flex justify-center gap-3 pt-2">
+                <Button
+                  variant="primary"
+                  size="md"
+                  isLoading={isGenerating}
+                  onClick={handleGenerateRecommendation}
+                  className="bg-status-info hover:bg-blue-700"
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Generate Allocation Recommendation
+                </Button>
+                {canDecide && (
+                  <Button
+                    variant="outline"
+                    size="md"
+                    onClick={() => openOverrideModal()}
+                    className="border-amber-500 text-amber-700 hover:bg-amber-50"
+                  >
+                    <FileEdit className="h-4 w-4 mr-2 text-amber-600" />
+                    Direct Manual Override
+                  </Button>
+                )}
+              </div>
             </CardContent>
           </Card>
         ) : recommendation.status === 'NO_FEASIBLE_ALLOCATION' ? (
@@ -292,7 +381,7 @@ export const RecommendationCenter: React.FC = () => {
                 <p className="font-bold text-status-critical">Mandatory Safety Constraint Violation</p>
                 <p className="text-clinical-on-surface-variant mt-1">
                   The algorithm evaluated all hospital candidate beds/equipment for patient{' '}
-                  <strong>{recommendation.patientName || selectedAdmissionId}</strong>, but no resource passed mandatory Lassa fever isolation safety checks.
+                  <strong>{recommendation.patientName || currentAdmission?.admissionNumber || selectedAdmissionId}</strong>, but no bed passed mandatory Lassa fever isolation safety checks.
                 </p>
               </div>
 
@@ -303,12 +392,29 @@ export const RecommendationCenter: React.FC = () => {
                     <XCircle className="h-4 w-4 shrink-0" />
                     <span>Isolation Capability: Negative pressure beds occupied or undergoing decontamination.</span>
                   </div>
+                  <div className="flex items-center gap-2 text-status-critical">
+                    <XCircle className="h-4 w-4 shrink-0" />
+                    <span>Infection Control: Non-isolation beds excluded to avoid patient contamination risk.</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <Button variant="outline" size="sm" onClick={() => fetchRecommendation()}>Re-evaluate Capacity</Button>
-                <Button variant="danger" size="sm" onClick={() => setOverrideModalOpen(true)}>Initiate Emergency Override</Button>
+              <div className="flex flex-wrap justify-between items-center gap-2 pt-2 border-t border-clinical-border">
+                <span className="text-xs text-clinical-on-surface-variant italic">
+                  Clinicians can execute an emergency manual override to allocate an alternative bed.
+                </span>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => fetchRecommendation()}>
+                    <RefreshCw className="h-3.5 w-3.5 mr-1" />
+                    Re-evaluate Capacity
+                  </Button>
+                  {canDecide && (
+                    <Button variant="danger" size="sm" onClick={() => openOverrideModal()}>
+                      <FileEdit className="h-3.5 w-3.5 mr-1" />
+                      Initiate Emergency Manual Override
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -330,9 +436,17 @@ export const RecommendationCenter: React.FC = () => {
                 </p>
               </div>
 
-              <Button variant="primary" size="sm" onClick={() => window.location.href = '/patients'}>
-                Complete Patient Assessment
-              </Button>
+              <div className="flex gap-3">
+                <Button variant="primary" size="sm" onClick={() => window.location.href = '/patients'}>
+                  Complete Patient Assessment
+                </Button>
+                {canDecide && (
+                  <Button variant="outline" size="sm" onClick={() => openOverrideModal()} className="border-amber-500 text-amber-700">
+                    <FileEdit className="h-3.5 w-3.5 mr-1" />
+                    Manual Bed Allocation Override
+                  </Button>
+                )}
+              </div>
             </CardContent>
           </Card>
         ) : (
@@ -348,7 +462,8 @@ export const RecommendationCenter: React.FC = () => {
                   <Badge variant="info">Batch {recommendation.batchType || 'ALLOCATION'}</Badge>
                 </div>
                 <p className="text-xs text-clinical-on-surface-variant mt-1">
-                  Admission ID: <span className="font-mono font-bold text-gray-700">{recommendation.admissionId}</span>
+                  Admission: <span className="font-mono font-bold text-gray-700">{currentAdmission?.admissionNumber || recommendation.admissionId}</span>
+                  {recommendation.patientName && <span className="ml-2 font-semibold">| Patient: {recommendation.patientName}</span>}
                 </p>
               </div>
 
@@ -395,12 +510,16 @@ export const RecommendationCenter: React.FC = () => {
                                 <h4 className="text-xs font-bold text-clinical-navy">
                                   {item.recommendedEntityName || `${item.itemType || 'Resource'} Candidate`}
                                 </h4>
-                                <span className="text-[10px] font-mono text-gray-500">ID: {item.recommendedEntityId}</span>
+                                <span className="text-[10px] font-mono text-gray-500">
+                                  ID: {item.recommendedEntityId}
+                                </span>
                               </div>
                             </div>
 
                             <div className="text-right">
-                              <span className="text-[10px] font-bold uppercase text-clinical-on-surface-variant">Allocation Score</span>
+                              <span className="text-[10px] font-bold uppercase text-clinical-on-surface-variant">
+                                Allocation Score
+                              </span>
                               <div className="text-base font-bold font-tabular text-status-info">
                                 {(((item.allocationScore ?? item.confidenceScore) || 0) * 100).toFixed(0)}%
                               </div>
@@ -417,7 +536,7 @@ export const RecommendationCenter: React.FC = () => {
                           <div className="mt-4 flex items-center justify-between border-t border-clinical-border pt-3">
                             <div>
                               {item.status !== 'PENDING' && (
-                                <Badge variant={item.status === 'ACCEPTED' ? 'ready' : 'neutral'}>
+                                <Badge variant={item.status === 'ACCEPTED' ? 'ready' : item.status === 'OVERRIDDEN' ? 'warning' : 'neutral'}>
                                   Decision: {item.status}
                                 </Badge>
                               )}
@@ -442,11 +561,8 @@ export const RecommendationCenter: React.FC = () => {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => {
-                                      setSelectedItemId(item.id);
-                                      setOverrideModalOpen(true);
-                                    }}
-                                    className="text-xs"
+                                    onClick={() => openOverrideModal(item.id)}
+                                    className="text-xs border-amber-500 text-amber-700 hover:bg-amber-50"
                                   >
                                     <FileEdit className="h-3.5 w-3.5 mr-1 text-amber-600" />
                                     Override
@@ -545,45 +661,91 @@ export const RecommendationCenter: React.FC = () => {
         </div>
       </Modal>
 
-      {/* Override Modal */}
-      <Modal isOpen={overrideModalOpen} onClose={() => setOverrideModalOpen(false)} title="Manual Override Workflow">
+      {/* Clinical Manual Override Modal */}
+      <Modal isOpen={overrideModalOpen} onClose={() => setOverrideModalOpen(false)} title="Manual Clinical Allocation Override">
         <div className="space-y-4">
-          <div className="rounded border border-status-warning-border bg-status-warning-bg p-3 text-xs text-amber-800">
+          <div className="rounded border border-status-warning-border bg-status-warning-bg p-3 text-xs text-amber-900">
             <div className="flex items-center gap-1.5 font-bold mb-1">
               <AlertTriangle className="h-4 w-4 text-status-warning" />
-              <span>Audit Warning</span>
+              <span>Immutable Audit Trail Warning</span>
             </div>
-            This manual override will replace the algorithm's safety recommendation and will be logged in the permanent hospital audit log with your user ID.
+            This manual override will assign the chosen bed directly to Admission{' '}
+            <strong>{currentAdmission?.admissionNumber || selectedAdmissionId}</strong>. It will be recorded in the hospital's permanent audit log with your clinical credentials.
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase text-clinical-navy mb-1">Override Candidate ID *</label>
-            <input
-              type="text"
-              required
-              value={overrideEntityId}
-              onChange={(e) => setOverrideEntityId(e.target.value)}
-              className="w-full rounded border border-clinical-border bg-white p-2 text-xs font-mono focus:border-status-info focus:outline-none"
-              placeholder="e.g. bed-108 or eq-501"
-            />
+            <label className="block text-xs font-bold uppercase text-clinical-navy mb-1">
+              Select Destination Bed *
+            </label>
+            {availableBeds.length === 0 ? (
+              <div className="p-2 rounded border border-red-200 bg-red-50 text-xs text-red-700">
+                No beds are currently marked AVAILABLE. Please check bed cleaning status or discharge completed patients.
+              </div>
+            ) : (
+              <select
+                required
+                value={selectedBedId}
+                onChange={(e) => setSelectedBedId(e.target.value)}
+                className="w-full rounded border border-clinical-border bg-white p-2 text-xs font-mono font-medium focus:border-status-info focus:outline-none"
+              >
+                <option value="">-- Choose an Available Bed ({availableBeds.length} Available) --</option>
+                {availableBeds.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.bedNumber} | {b.bedType || 'STANDARD'} {b.isIsolationCapable ? '(ISOLATION NEGATIVE PRESSURE)' : '(Standard)'} {b.wardName ? `[${b.wardName}]` : ''}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase text-clinical-navy mb-1">Override Justification *</label>
+            <label className="block text-xs font-bold uppercase text-clinical-navy mb-1">
+              Optional Dedicated Equipment
+            </label>
+            <select
+              value={selectedEquipmentId}
+              onChange={(e) => setSelectedEquipmentId(e.target.value)}
+              className="w-full rounded border border-clinical-border bg-white p-2 text-xs font-mono font-medium focus:border-status-info focus:outline-none"
+            >
+              <option value="">-- No Additional Equipment Required --</option>
+              {availableEquipment.map((eq) => (
+                <option key={eq.id} value={eq.id}>
+                  {eq.name} ({eq.equipmentType || 'EQUIPMENT'}, S/N: {eq.serialNumber})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold uppercase text-clinical-navy mb-1">
+              Mandatory Clinical Justification *
+            </label>
             <textarea
               required
               rows={3}
               value={overrideJustification}
               onChange={(e) => setOverrideJustification(e.target.value)}
               className="w-full rounded border border-clinical-border bg-white p-2 text-xs focus:border-status-info focus:outline-none"
-              placeholder="Detailed clinical rationale for manual selection override."
+              placeholder="e.g. Approved by Dr. Sarah - Emergency admission with acute hemorrhagic manifestations requiring immediate containment in Bed A02."
             />
+            <p className="text-[10px] text-gray-500 mt-1">
+              Please specify clinician reasoning, risk assessment, or infection control justification.
+            </p>
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" size="sm" onClick={() => setOverrideModalOpen(false)}>Cancel</Button>
-            <Button variant="primary" size="sm" isLoading={isSubmitting} onClick={handleOverrideSubmit}>
-              Confirm Manual Override
+          <div className="flex justify-end gap-2 pt-2 border-t border-clinical-border">
+            <Button variant="outline" size="sm" onClick={() => setOverrideModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              isLoading={isSubmitting}
+              onClick={handleOverrideSubmit}
+              disabled={!selectedBedId || !overrideJustification.trim()}
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+            >
+              Confirm Clinical Override
             </Button>
           </div>
         </div>

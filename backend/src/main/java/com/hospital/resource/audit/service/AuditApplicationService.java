@@ -73,13 +73,16 @@ public class AuditApplicationService {
     public AuditLog recordAudit(UUID userId, String actionType, String entityType, UUID entityId,
                                String beforeValue, String afterValue, String ipAddress, String userAgent) {
         Instant now = Instant.now();
+        String safeBefore = toJsonSafe(beforeValue);
+        String safeAfter = toJsonSafe(afterValue);
+
         String rawData = String.format("%s:%s:%s:%s:%s:%s",
                 now.toString(),
                 userId != null ? userId.toString() : "anonymous",
                 actionType,
                 entityType,
                 entityId != null ? entityId.toString() : "none",
-                afterValue != null ? afterValue : "");
+                safeAfter != null ? safeAfter : "");
         String hash = computeSha256(rawData);
 
         AuditLog logEntry = AuditLog.builder()
@@ -88,8 +91,8 @@ public class AuditApplicationService {
                 .actionType(actionType)
                 .entityType(entityType)
                 .entityId(entityId != null ? entityId : UUID.randomUUID())
-                .beforeValue(beforeValue)
-                .afterValue(afterValue)
+                .beforeValue(safeBefore)
+                .afterValue(safeAfter)
                 .ipAddress(ipAddress != null ? ipAddress : "127.0.0.1")
                 .userAgent(userAgent != null ? userAgent : "BSUTH Clinical App")
                 .integrityHash(hash)
@@ -99,6 +102,17 @@ public class AuditApplicationService {
         log.info("Recorded immutable audit entry: id={}, action={}, entityType={}, entityId={}",
                 saved.getId(), actionType, entityType, entityId);
         return saved;
+    }
+
+    private String toJsonSafe(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        String trimmed = value.trim();
+        if ((trimmed.startsWith("{") && trimmed.endsWith("}")) || (trimmed.startsWith("[") && trimmed.endsWith("]"))) {
+            return trimmed;
+        }
+        return "{\"value\":\"" + trimmed.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r") + "\"}";
     }
 
     private String computeSha256(String input) {
@@ -119,7 +133,7 @@ public class AuditApplicationService {
                     .orElse("user_" + logItem.getUserId().toString().substring(0, 8));
         }
 
-        String justification = logItem.getAfterValue();
+        String justification = extractJustification(logItem.getAfterValue());
 
         return new AuditLogResponse(
                 logItem.getId(),
@@ -136,5 +150,14 @@ public class AuditApplicationService {
                 logItem.getIpAddress(),
                 logItem.getTimestamp()
         );
+    }
+
+    private String extractJustification(String afterValue) {
+        if (afterValue == null) return null;
+        if (afterValue.startsWith("{\"value\":\"") && afterValue.endsWith("\"}")) {
+            return afterValue.substring(10, afterValue.length() - 2)
+                    .replace("\\\"", "\"").replace("\\\\", "\\").replace("\\n", "\n").replace("\\r", "\r");
+        }
+        return afterValue;
     }
 }

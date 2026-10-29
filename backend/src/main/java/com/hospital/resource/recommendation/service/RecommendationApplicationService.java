@@ -8,6 +8,7 @@ import com.hospital.resource.assessment.repository.ClinicalAssessmentRepository;
 import com.hospital.resource.audit.service.AuditApplicationService;
 import com.hospital.resource.bed.entity.Bed;
 import com.hospital.resource.bed.repository.BedRepository;
+import com.hospital.resource.common.exception.ConflictException;
 import com.hospital.resource.common.exception.ResourceNotFoundException;
 import com.hospital.resource.common.exception.ValidationException;
 import com.hospital.resource.equipment.entity.Equipment;
@@ -661,6 +662,31 @@ public class RecommendationApplicationService {
                             request.overrideJustification()
                     );
                 }
+            } else if ("EQUIPMENT".equalsIgnoreCase(item.getItemType()) && request.overriddenEntityId() != null) {
+                UUID overriddenEqId = request.overriddenEntityId();
+                Equipment eq = equipmentRepository.findByIdWithLock(overriddenEqId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Equipment", overriddenEqId.toString()));
+
+                eq.setStatus("IN_USE");
+                eq.setAssignedAdmissionId(admission.getId());
+                eq.setUpdatedBy(userId);
+                equipmentRepository.save(eq);
+
+                log.info("Clinician manual override: Equipment {} assigned to Admission {}. Justification: {}",
+                        eq.getName(), admission.getId(), request.overrideJustification());
+
+                if (auditService != null) {
+                    auditService.recordAudit(
+                            userId,
+                            "RECOMMENDATION_OVERRIDE",
+                            "EQUIPMENT",
+                            eq.getId(),
+                            "AVAILABLE",
+                            "IN_USE",
+                            "127.0.0.1",
+                            request.overrideJustification()
+                    );
+                }
             }
 
             item.setStatus("OVERRIDDEN");
@@ -701,6 +727,117 @@ public class RecommendationApplicationService {
     @Transactional
     public RecommendationDecisionResponse makeDecision(UUID itemId, RecommendationDecisionRequest request, UUID userId) {
         return recordDecision(itemId, request, userId);
+    }
+
+    @Transactional
+    public RecommendationDecisionResponse overrideAdmissionAllocation(UUID admissionId, RecommendationOverrideRequest request, UUID userId) {
+        if (request.overrideJustification() == null || request.overrideJustification().trim().isEmpty()) {
+            throw new ValidationException("Clinical justification is mandatory for manual overrides.");
+        }
+
+        Admission admission = admissionRepository.findById(admissionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Admission", admissionId.toString()));
+
+        UUID targetBedId = request.overriddenBedId();
+        Bed bed = bedRepository.findByIdWithLock(targetBedId)
+                .orElseThrow(() -> new ResourceNotFoundException("Bed", targetBedId.toString()));
+
+        if (bed.getCurrentAdmissionId() != null && !bed.getCurrentAdmissionId().equals(admission.getId())) {
+            Admission currentOccupant = admissionRepository.findById(bed.getCurrentAdmissionId()).orElse(null);
+            if (currentOccupant != null && currentOccupant.getIsActive() != null && currentOccupant.getIsActive()) {
+                throw new ConflictException("Bed " + bed.getBedNumber() + " is already occupied by active admission " + currentOccupant.getAdmissionNumber());
+            }
+        }
+
+        if (admission.getBedId() != null && !admission.getBedId().equals(bed.getId())) {
+            Bed oldBed = bedRepository.findById(admission.getBedId()).orElse(null);
+            if (oldBed != null) {
+                oldBed.setStatus("CLEANING_REQUIRED");
+                oldBed.setCurrentAdmissionId(null);
+                bedRepository.save(oldBed);
+            }
+        }
+
+        admission.setWardId(bed.getWardId());
+        admission.setBedId(bed.getId());
+        admission.setStatus("ADMITTED");
+        admission.setUpdatedBy(userId);
+        admissionRepository.save(admission);
+
+        bed.setStatus("OCCUPIED");
+        bed.setCurrentAdmissionId(admission.getId());
+        bed.setUpdatedBy(userId);
+        bedRepository.save(bed);
+
+        log.info("Manual admission override: Bed {} assigned to Admission {}. Clinician: {}",
+                bed.getBedNumber(), admission.getAdmissionNumber(), userId);
+
+        if (auditService != null) {
+            auditService.recordAudit(
+                    userId,
+                    "RECOMMENDATION_OVERRIDE",
+                    "BED",
+                    bed.getId(),
+                    "MANUAL_SELECTION",
+                    "OCCUPIED",
+                    "127.0.0.1",
+                    "Manual override: " + request.overrideJustification()
+            );
+        }
+
+        if (request.overriddenEquipmentId() != null) {
+            Equipment eq = equipmentRepository.findByIdWithLock(request.overriddenEquipmentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Equipment", request.overriddenEquipmentId().toString()));
+            eq.setStatus("IN_USE");
+            eq.setAssignedAdmissionId(admission.getId());
+            eq.setUpdatedBy(userId);
+            equipmentRepository.save(eq);
+
+            if (auditService != null) {
+                auditService.recordAudit(
+                        userId,
+                        "RECOMMENDATION_OVERRIDE",
+                        "EQUIPMENT",
+                        eq.getId(),
+                        "AVAILABLE",
+                        "IN_USE",
+                        "127.0.0.1",
+                        "Equipment manual override: " + request.overrideJustification()
+                );
+            }
+        }
+
+        List<AllocationRecommendation> recommendations = recommendationRepository.findByAdmissionId(admissionId);
+        for (AllocationRecommendation rec : recommendations) {
+            rec.setStatus("DECIDED");
+            recommendationRepository.save(rec);
+            List<RecommendationItem> items = itemRepository.findByRecommendationId(rec.getId());
+            for (RecommendationItem it : items) {
+                if ("PENDING".equalsIgnoreCase(it.getStatus())) {
+                    it.setStatus("OVERRIDDEN");
+                    itemRepository.save(it);
+                }
+            }
+        }
+
+        RecommendationDecision decision = RecommendationDecision.builder()
+                .decisionType("OVERRIDE")
+                .overriddenEntityType("BED")
+                .overriddenEntityId(bed.getId())
+                .overrideJustification(request.overrideJustification())
+                .decidedBy(userId)
+                .decidedAt(Instant.now())
+                .build();
+
+        decision = decisionRepository.save(decision);
+
+        return new RecommendationDecisionResponse(
+                decision.getId(),
+                decision.getRecommendationItemId(),
+                decision.getDecisionType(),
+                decision.getDecidedBy(),
+                decision.getDecidedAt()
+        );
     }
 
     private RecommendationResponse toResponse(AllocationRecommendation recommendation, List<RecommendationItem> items) {

@@ -295,3 +295,14 @@ export interface AuditLog {
   ipAddress?: string;
   timestamp: string;
 }
+
+
+export interface ResourceInventoryBatch {
+  id: string;
+  resourceId: string;
+  resourceName: string;
+  location: string;
+  currentStock: number;
+  expirationDate?: string;
+  batchNumber?: string;
+}

@@ -18,6 +18,11 @@ public class InventoryController {
 
     private final InventoryApplicationService inventoryService;
 
+    @GetMapping
+    public ApiResponse<List<ResourceInventoryBatchResponse>> getAllInventory() {
+        return ApiResponse.success(inventoryService.getAllInventoryBatches());
+    }
+
     @PostMapping("/transactions")
     public ApiResponse<InventoryTransactionResponse> recordTransaction(@Valid @RequestBody InventoryTransactionRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();

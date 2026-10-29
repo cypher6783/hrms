@@ -79,24 +79,98 @@ public class ResourceApplicationService {
 
         resource = resourceRepository.save(resource);
         log.info("Resource created: resourceId={}, name={}, category={}", resource.getId(), resource.getName(), resource.getCategory());
-        return resourceMapper.toResponse(resource);
+        return enrichWithStock(resource);
     }
 
     @Transactional(readOnly = true)
     public ResourceResponse getResource(UUID id) {
         Resource resource = resourceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resource", id.toString()));
-        return resourceMapper.toResponse(resource);
+        return enrichWithStock(resource);
     }
 
     @Transactional(readOnly = true)
     public List<ResourceResponse> getAllResources() {
-        return resourceMapper.toResponseList(resourceRepository.findAll());
+        return resourceRepository.findAll().stream().map(this::enrichWithStock).toList();
     }
 
     @Transactional(readOnly = true)
     public List<ResourceResponse> getResourcesByCategory(String category) {
-        return resourceMapper.toResponseList(resourceRepository.findByCategory(category));
+        return resourceRepository.findByCategory(category).stream().map(this::enrichWithStock).toList();
+    }
+
+    public ResourceResponse enrichWithStock(Resource resource) {
+        int total = 0;
+        int allocated = 0;
+        int reserved = 0;
+
+        if (inventoryRepository != null) {
+            Integer totalStock = inventoryRepository.sumStockByResourceId(resource.getId());
+            total = totalStock != null ? totalStock : 0;
+        }
+
+        if (allocationRepository != null) {
+            Integer activeAllocated = allocationRepository.sumActiveAllocatedQuantityByResourceId(resource.getId());
+            allocated = activeAllocated != null ? activeAllocated : 0;
+        }
+
+        if (reservationRepository != null) {
+            Integer activeReserved = reservationRepository.sumActiveReservedQuantityByResourceId(resource.getId(), Instant.now());
+            reserved = activeReserved != null ? activeReserved : 0;
+        }
+
+        int available = Math.max(0, total - allocated - reserved);
+        int minThreshold = resource.getMinimumThreshold() != null ? resource.getMinimumThreshold() : 0;
+
+        String status;
+        if (available <= 0) {
+            status = "OUT_OF_STOCK";
+        } else if (available <= minThreshold) {
+            status = "LOW_STOCK";
+        } else {
+            status = "AVAILABLE";
+        }
+
+        if (resourceMapper != null) {
+            ResourceResponse base = resourceMapper.toResponse(resource);
+            if (base != null) {
+                return new ResourceResponse(
+                        base.id(),
+                        base.name(),
+                        base.category(),
+                        base.unitOfMeasure(),
+                        base.minimumThreshold(),
+                        base.reorderPoint(),
+                        base.criticalityLevel(),
+                        base.defaultSupplierId(),
+                        base.createdAt(),
+                        base.updatedAt(),
+                        total,
+                        available,
+                        reserved,
+                        allocated,
+                        status
+                );
+            }
+        }
+
+        return new ResourceResponse(
+                resource.getId(),
+                resource.getName(),
+                resource.getCategory(),
+                resource.getUnitOfMeasure(),
+                resource.getMinimumThreshold(),
+                resource.getReorderPoint(),
+                resource.getCriticalityLevel(),
+                resource.getDefaultSupplierId(),
+                resource.getCreatedAt(),
+                resource.getUpdatedAt(),
+                total,
+                available,
+                reserved,
+                allocated,
+                status
+        );
     }
 
     @Transactional
@@ -120,7 +194,7 @@ public class ResourceApplicationService {
 
         resource = resourceRepository.save(resource);
         log.info("Resource updated: resourceId={}", resource.getId());
-        return resourceMapper.toResponse(resource);
+        return enrichWithStock(resource);
     }
 
     @Transactional

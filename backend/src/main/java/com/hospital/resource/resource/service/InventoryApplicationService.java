@@ -167,6 +167,25 @@ public class InventoryApplicationService {
     }
 
     @Transactional(readOnly = true)
+    public List<com.hospital.resource.resource.dto.ResourceInventoryBatchResponse> getAllInventoryBatches() {
+        java.util.Map<UUID, String> resourceNames = resourceRepository != null
+                ? resourceRepository.findAll().stream().collect(java.util.stream.Collectors.toMap(com.hospital.resource.resource.entity.Resource::getId, com.hospital.resource.resource.entity.Resource::getName, (a, b) -> a))
+                : java.util.Collections.emptyMap();
+
+        return inventoryRepository.findAll().stream()
+                .map(inv -> new com.hospital.resource.resource.dto.ResourceInventoryBatchResponse(
+                        inv.getId(),
+                        inv.getResourceId(),
+                        resourceNames.getOrDefault(inv.getResourceId(), "Resource " + inv.getResourceId()),
+                        inv.getLocation(),
+                        inv.getCurrentStock(),
+                        inv.getExpirationDate(),
+                        inv.getBatchNumber()
+                ))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<InventoryTransactionResponse> getTransactionHistory(UUID inventoryId) {
         return inventoryMapper.toTransactionResponseList(
                 transactionRepository.findByResourceInventoryIdOrderByTransactionTimestampDesc(inventoryId)

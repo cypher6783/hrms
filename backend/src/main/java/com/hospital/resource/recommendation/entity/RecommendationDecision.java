@@ -15,7 +15,7 @@ public class RecommendationDecision {
     @GenericGenerator(name = "UUID", type = org.hibernate.id.UUIDGenerator.class)
     private UUID id;
 
-    @Column(name = "recommendation_item_id", nullable = false)
+    @Column(name = "recommendation_item_id")
     private UUID recommendationItemId;
 
     @Column(name = "decision_type", nullable = false, length = 50)
